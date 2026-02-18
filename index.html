@@ -1,0 +1,2339 @@
+<!doctype html>
+<html lang="pt-BR" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checklists de Segurança Elétrica - Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .checklist-card {
+      transition: all 0.3s ease;
+    }
+    
+    .checklist-card:hover {
+      transform: translateY(-8px);
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.4s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .slide-up {
+      animation: slideUp 0.3s ease;
+    }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; }
+      .document-container { 
+        box-shadow: none !important; 
+        margin: 0 !important;
+        padding: 15mm !important;
+      }
+    }
+    
+    .status-btn {
+      transition: all 0.2s ease;
+    }
+    
+    .status-btn:hover {
+      transform: scale(1.05);
+    }
+    
+    .status-btn.selected {
+      ring: 3px;
+      ring-offset: 2px;
+    }
+    
+    .header-cell {
+      border: 1px solid #374151;
+      padding: 4px 8px;
+      font-size: 10px;
+    }
+    
+    .checklist-table th,
+    .checklist-table td {
+      border: 1px solid #374151;
+      padding: 5px;
+      text-align: left;
+      font-size: 10px;
+    }
+    
+    .checklist-table th {
+      background-color: #f3f4f6;
+      font-weight: 600;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full overflow-auto">
+  <div id="app" class="min-h-full w-full"><!-- TELA DE LOGIN -->
+   <div id="screen-login" class="min-h-full flex items-center justify-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="w-full max-w-md px-6">
+     <div class="bg-white rounded-3xl shadow-2xl p-10 fade-in">
+      <div class="text-center mb-8">
+       <div class="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xl">
+        <svg class="w-10 h-10 text-yellow-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+       </div>
+       <h1 class="text-3xl font-bold text-gray-900 mb-2">Bem-vindo!</h1>
+       <p class="text-gray-600">Entre com seu nome e senha</p>
+      </div>
+      <form id="login-form" class="space-y-5">
+       <div><label for="login-name" class="block text-sm font-semibold text-gray-700 mb-2">Nome de Usuário</label> <input type="text" id="login-name" class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:border-blue-600 focus:outline-none transition-colors" placeholder="Digite seu nome" required>
+       </div>
+       <div><label for="login-password" class="block text-sm font-semibold text-gray-700 mb-2">Senha</label> <input type="password" id="login-password" class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:border-blue-600 focus:outline-none transition-colors" placeholder="Digite sua senha" required>
+       </div><button type="submit" id="btn-login" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-6 rounded-xl text-lg transition-all shadow-lg"> Entrar </button>
+       <div class="text-center pt-4 border-t border-gray-200">
+        <p class="text-sm text-gray-600 mb-3">Primeiro acesso?</p><button type="button" id="btn-register" class="text-blue-600 hover:text-blue-700 font-semibold text-sm transition-colors"> Criar Nova Conta → </button>
+       </div>
+      </form>
+     </div>
+     <div class="text-center mt-6 text-white text-sm">
+      <p>Sistema de Checklists de Segurança Elétrica</p>
+      <p class="text-blue-200">Tecnosonda • Versão 64</p>
+     </div>
+    </div>
+   </div><!-- TELA DE REGISTRO -->
+   <div id="screen-register" class="min-h-full flex items-center justify-center hidden" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="w-full max-w-md px-6">
+     <div class="bg-white rounded-3xl shadow-2xl p-10 fade-in">
+      <div class="text-center mb-8">
+       <div class="w-20 h-20 bg-gradient-to-br from-green-600 to-green-800 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xl">
+        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+        </svg>
+       </div>
+       <h1 class="text-3xl font-bold text-gray-900 mb-2">Criar Conta</h1>
+       <p class="text-gray-600">Cadastre-se para começar</p>
+      </div>
+      <form id="register-form" class="space-y-5">
+       <div><label for="register-name" class="block text-sm font-semibold text-gray-700 mb-2">Nome de Usuário</label> <input type="text" id="register-name" class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:border-green-600 focus:outline-none transition-colors" placeholder="Escolha um nome de usuário" required>
+       </div>
+       <div><label for="register-password" class="block text-sm font-semibold text-gray-700 mb-2">Senha</label> <input type="password" id="register-password" class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:border-green-600 focus:outline-none transition-colors" placeholder="Crie uma senha" required>
+       </div>
+       <div><label for="register-password-confirm" class="block text-sm font-semibold text-gray-700 mb-2">Confirmar Senha</label> <input type="password" id="register-password-confirm" class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:border-green-600 focus:outline-none transition-colors" placeholder="Digite a senha novamente" required>
+       </div><button type="submit" id="btn-create-account" class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-xl text-lg transition-all shadow-lg"> Criar Conta </button>
+       <div class="text-center pt-4 border-t border-gray-200"><button type="button" id="btn-back-to-login" class="text-gray-600 hover:text-gray-900 font-semibold text-sm transition-colors"> ← Voltar para Login </button>
+       </div>
+      </form>
+     </div>
+    </div>
+   </div><!-- TELA DE SELEÇÃO DE CHECKLIST -->
+   <div id="screen-selection" class="min-h-full flex flex-col hidden">
+    <header class="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-6 px-6 shadow-lg">
+     <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-4">
+       <div class="w-14 h-14 bg-yellow-400 rounded-xl flex items-center justify-center shadow-lg">
+        <svg class="w-8 h-8 text-blue-900" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+       </div>
+       <div>
+        <h1 id="header-title" class="text-2xl font-bold">Checklists de Segurança Elétrica</h1>
+        <p class="text-blue-200 text-sm">Sistema de Inspeção e Conformidade</p>
+       </div>
+      </div>
+      <div class="flex items-center gap-3">
+       <div class="text-right mr-3">
+        <div class="text-sm text-blue-200">
+         Olá,
+        </div>
+        <div class="font-bold" id="user-display-name">
+         Usuário
+        </div>
+       </div><button id="btn-history-main" class="flex items-center gap-2 bg-blue-800 hover:bg-blue-600 px-5 py-3 rounded-xl text-sm font-semibold transition-colors shadow-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg> Histórico </button> <button id="btn-logout" class="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-5 py-3 rounded-xl text-sm font-semibold transition-colors shadow-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg> Sair </button>
+      </div>
+     </div>
+    </header>
+    <main class="flex-1 py-12 px-6" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+     <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-12 fade-in">
+       <h2 class="text-4xl font-bold text-white mb-3">Selecione o Checklist</h2>
+       <p class="text-blue-100 text-lg">Escolha o equipamento ou item para realizar a inspeção</p>
+      </div>
+      <div id="checklist-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"><!-- Cards serão gerados dinamicamente -->
+      </div>
+     </div>
+    </main>
+   </div><!-- TELA DE PERGUNTAS -->
+   <div id="screen-questions" class="min-h-full flex flex-col hidden">
+    <header class="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-4 px-6 no-print shadow-lg">
+     <div class="max-w-4xl mx-auto">
+      <div class="flex items-center justify-between mb-3"><button id="btn-back-selection" class="flex items-center gap-2 text-blue-200 hover:text-white transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg> Voltar </button>
+       <div class="text-center"><span id="current-checklist-name" class="text-lg font-semibold"></span>
+        <div id="progress-text" class="text-sm text-blue-200">
+         Pergunta 1 de 10
+        </div>
+       </div>
+       <div class="w-20"></div>
+      </div>
+      <div class="w-full bg-blue-800 rounded-full h-2.5">
+       <div id="progress-bar" class="bg-yellow-400 h-2.5 rounded-full transition-all duration-300" style="width: 10%"></div>
+      </div>
+     </div>
+    </header>
+    <main class="flex-1 flex items-center justify-center p-6" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+     <div id="question-container" class="max-w-2xl w-full"><!-- Conteúdo dinâmico -->
+     </div>
+    </main>
+   </div><!-- TELA DE ASSINATURA -->
+   <div id="screen-signature" class="min-h-full flex flex-col hidden">
+    <header class="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-4 px-6 shadow-lg">
+     <div class="max-w-4xl mx-auto flex items-center justify-between">
+       <h2 class="text-xl font-bold">Assinatura do Responsável</h2>
+     </div>
+    </header>
+    <main class="flex-1 flex flex-col items-center justify-center p-6" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+     <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-2xl">
+      <div class="mb-4 text-center">
+       <p class="text-gray-600">Por favor, assine no quadro abaixo para confirmar a inspeção.</p>
+      </div>
+      <div class="border-2 border-gray-300 rounded-xl overflow-hidden mb-6 bg-white touch-none">
+       <canvas id="signature-canvas" class="w-full h-64 cursor-crosshair"></canvas>
+      </div>
+      <div class="flex gap-4">
+       <button onclick="window.clearSignature()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-xl transition-colors">
+        Limpar
+       </button>
+       <button onclick="window.saveSignatureAndFinish()" class="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-lg">
+        Confirmar
+       </button>
+      </div>
+     </div>
+    </main>
+   </div><!-- TELA DO DOCUMENTO FINAL -->
+   <div id="screen-document" class="min-h-full bg-gray-100 hidden">
+    <header class="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-4 px-6 no-print sticky top-0 z-10 shadow-lg">
+     <div class="max-w-4xl mx-auto flex items-center justify-between"><button id="btn-back-selection-doc" class="flex items-center gap-2 text-blue-200 hover:text-white transition-colors">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+       </svg> Voltar </button>
+      <div class="flex gap-3"><button id="btn-download-pdf" class="flex items-center gap-2 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg> Baixar PDF </button> <button id="btn-new" class="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-lg text-blue-900">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg> Novo Checklist </button>
+      </div>
+     </div>
+    </header>
+    <div id="alert-nc" class="bg-red-600 text-white py-3 px-6 no-print hidden">
+     <div class="max-w-4xl mx-auto flex items-center gap-3">
+      <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg><span class="font-semibold">ATENÇÃO: Item NÃO APROVADO - Equipamento não deve ser utilizado at�� correção.</span>
+     </div>
+    </div>
+    <div class="py-8 px-4 overflow-x-auto">
+     <div id="document-content" class="document-container max-w-4xl mx-auto bg-white shadow-xl rounded-lg min-w-[900px]" style="padding: 30px;"><!-- Conteúdo do documento -->
+     </div>
+    </div>
+   </div><!-- TELA DE HISTÓRICO -->
+   <div id="screen-history" class="min-h-full flex flex-col hidden">
+    <header class="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-4 px-6 shadow-lg">
+     <div class="max-w-6xl mx-auto flex items-center justify-between"><button id="btn-back-history" class="flex items-center gap-2 text-blue-200 hover:text-white transition-colors">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+       </svg> Voltar </button>
+      <h2 class="text-xl font-bold">Histórico de Inspeções</h2><button id="btn-monthly-report" class="flex items-center gap-2 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-lg">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+       </svg> Relatório Mensal </button>
+     </div>
+    </header>
+    <main class="flex-1 p-6 bg-gray-50">
+     <div class="max-w-6xl mx-auto">
+      <div id="history-list" class="space-y-4"><!-- Lista dinâmica -->
+      </div>
+      <div id="history-empty" class="text-center py-16 hidden">
+       <svg class="w-20 h-20 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+       </svg>
+       <p class="text-gray-500 text-lg">Nenhuma inspeção encontrada.</p>
+      </div>
+     </div>
+    </main>
+   </div><!-- TELA DE RELATÓRIO MENSAL -->
+   <div id="screen-monthly-report" class="min-h-full bg-gray-100 hidden">
+    <header class="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-4 px-6 no-print sticky top-0 z-10 shadow-lg">
+     <div class="max-w-6xl mx-auto flex items-center justify-between"><button id="btn-back-monthly" class="flex items-center gap-2 text-blue-200 hover:text-white transition-colors">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+       </svg> Voltar </button>
+      <h2 class="text-xl font-bold">Relatório Mensal Consolidado</h2><button id="btn-download-monthly-pdf" class="flex items-center gap-2 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-lg">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+       </svg> Baixar PDF </button>
+     </div>
+    </header>
+    <div class="py-8 px-4 overflow-x-auto">
+     <div class="max-w-6xl mx-auto mb-6 no-print">
+      <div class="bg-white rounded-lg shadow-md p-4 flex items-center gap-4"><label class="font-semibold text-gray-700">Selecionar Mês/Ano:</label> <input type="month" id="month-selector" class="border-2 border-gray-300 rounded-lg px-4 py-2 focus:border-blue-600 focus:outline-none"> <button id="btn-filter-month" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition-colors"> Filtrar </button>
+      </div>
+     </div><!-- Filtros por Equipamento -->
+     <div class="max-w-6xl mx-auto mb-6 no-print">
+      <div class="bg-white rounded-xl shadow-md p-5">
+       <h3 class="font-bold text-gray-900 mb-4 text-lg">📊 Filtrar por Equipamento/Item</h3>
+       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3" id="filter-buttons"><!-- Botões gerados dinamicamente -->
+       </div>
+      </div>
+     </div>
+     <div id="monthly-content" class="document-container max-w-6xl mx-auto bg-white shadow-xl rounded-lg min-w-[1100px]" style="padding: 40px;"><!-- Conteúdo do relatório mensal -->
+     </div>
+    </div>
+   </div><!-- Loading Overlay -->
+   <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl p-8 flex flex-col items-center gap-4 shadow-2xl">
+     <svg class="animate-spin h-12 w-12 text-blue-600" fill="none" viewbox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle> <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+     </svg><span id="loading-text" class="text-gray-700 font-semibold text-lg">Salvando...</span>
+    </div>
+   </div><!-- Toast Message -->
+   <div id="toast" class="fixed bottom-6 right-6 bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center gap-3">
+    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+    </svg><span id="toast-message"></span>
+   </div>
+  </div>
+  <script>
+    // ============ CONFIGURAÇÃO GLOBAL ============
+    const defaultConfig = {
+      app_title: 'Checklists de Segurança Elétrica',
+      company_name: 'Tecnosonda',
+      background_color: '#667eea',
+      surface_color: '#ffffff',
+      text_color: '#1e293b',
+      primary_color: '#1e40af',
+      accent_color: '#fbbf24'
+    };
+    
+    // MOCK SDK PARA FUNCIONAMENTO LOCAL
+    if (!window.dataSdk) {
+      console.warn('SDK de dados não encontrado. Usando LocalStorage.');
+      window.dataSdk = {
+        listeners: [],
+        async init(handler) {
+          this.listeners.push(handler);
+          const data = JSON.parse(localStorage.getItem('checklist_app_data') || '[]');
+          handler.onDataChanged(data);
+          return { isOk: true };
+        },
+        async create(record) {
+          const data = JSON.parse(localStorage.getItem('checklist_app_data') || '[]');
+          const newRecord = { ...record, __backendId: Date.now().toString() };
+          data.push(newRecord);
+          localStorage.setItem('checklist_app_data', JSON.stringify(data));
+          this.listeners.forEach(l => l.onDataChanged(data));
+          return { isOk: true };
+        }
+      };
+    }
+    
+    window.appState = {
+      config: { ...defaultConfig },
+      allRecords: [],
+      currentUser: null,
+      currentChecklist: null,
+      currentStep: 0,
+      selectedChecklistType: null,
+      isLoading: false,
+      monthlyFilter: 'all'
+    };
+    
+    // ============ DEFINIÇÕES DOS CHECKLISTS ============
+    const checklistTypes = {
+      torre_iluminacao: {
+        name: 'Gerador/Torre de Iluminação',
+        color: 'from-yellow-400 to-orange-500',
+        items: [
+          { label: 'Aterramento instalado adequadamente?', required: true },
+          { label: 'Cabo com duplo isolamento e livre de emendas, avarias e danos?', required: true },
+          { label: 'Carcaça livre de avarias e danos?', required: true },
+          { label: 'Descarga de fumaça em local ventilado, afastado de pessoas e regulado?', required: true },
+          { label: 'Encontra-se instalado em área isolada e sinalizada?', required: true },
+          { label: 'Escapamento com proteção de parte quente?', required: true },
+          { label: 'Existe bacia de contenção que atenda a demanda de todo óleo para consumo em caso de derrame?', required: true },
+          { label: 'Extintor de incêndio é proporcional, inspecionado e carregado?', required: true },
+          { label: 'Interruptor liga / desliga funcionando?', required: true },
+          { label: 'Livre de vazamentos de óleo?', required: true },
+          { label: 'Não existem vibrações anormais quando em funcionamento?', required: true },
+          { label: 'Plug padrão industrial ou stack?', required: true },
+          { label: 'Pneus em bom estado de uso?', required: true },
+          { label: 'Possui chave de parada de emergência?', required: true },
+          { label: 'Possui chave liga/desliga?', required: true },
+          { label: 'Possui controle da emissão de gases poluentes e ruídos?', required: true },
+          { label: 'Possui proteção das partes móveis das engrenagens da torre de iluminação?', required: true },
+          { label: 'Possui fitas refletivas em seus lados externos?', required: true },
+          { label: 'Possui freio de estacionamento e calços?', required: true },
+          { label: 'Possui garantia atestada por oficina credenciada?', required: true },
+          { label: 'Possui identificação de tensão?', required: true },
+          { label: 'Possui logotipo da empresa e nº sequencial?', required: true },
+          { label: 'Possui manômetros / amperímetros?', required: true },
+          { label: 'Possui pontos de apoio (mínimo de três)?', required: true },
+          { label: 'Possui proteção contra intempéries?', required: true },
+          { label: 'Proteção de partes móveis e correias?', required: true },
+          { label: 'Sistema de reboque em bom estado de conservação?', required: true },
+          { label: 'Tanque de combustível identificado e isolado?', required: true }
+        ]
+      },
+
+      quadro_eletrico: {
+        name: 'Quadro Elétrico',
+        color: 'from-green-500 to-emerald-600',
+        items: [
+          { label: 'Inspeção visual?', required: true },
+          { label: 'O quadro elétrico está aterrado?', required: true },
+          { label: 'Cabos alimentadores estão em boas condições?', required: true },
+          { label: 'Proteção acrílica do quadro está instalada e está em boas condições?', required: true },
+          { label: 'Existe extintor próximo ao equipamento?', required: true },
+          { label: 'O quadro elétrico está bloqueado com cadeado?', required: true },
+          { label: 'O quadro elétrico possui proteção contra intempéries?', required: true },
+          { label: 'Todos os cabos, parafusos e plug estão em boas condições de uso?', required: true },
+          { label: 'O quadro elétrico possui carômetro do eletricista?', required: true },
+          { label: 'Possui relé de fuga (DDR)?', required: true },
+          { label: 'Possui diagrama unifilar?', required: true },
+          { label: 'Possui identificação de tensão?', required: true }
+        ]
+      },
+      ferramentas_manuais: {
+        name: 'Ferramentas Manuais',
+        color: 'from-red-500 to-pink-600',
+        items: [
+          { label: 'As ferramentas isoladas estão armazenadas em local adequado, longe de locais úmidos, que ofereçam risco de contaminação e/ou dano em sua estrutura? (Armazenar preferencialmente em caixas de ferramentas e/ou bolsas específicas)', required: true },
+          { label: 'Possuem número de série/TAG visível e legível?', required: true },
+          { label: 'As ferramentas isoladas possuem evidência de que foram realizados testes/ensaios de isolação e estes estão dentro dos prazos de validade?', required: true },
+          { label: 'As ferramentas isoladas estão livres de improvisos, emendas, prolongamentos?', required: true },
+          { label: 'É respeitada a proibição de utilizar ferramentas não isoladas em atividades elétricas?', required: true },
+          { label: 'Alicate Universal: O isolamento da empunhadura está íntegro e sem rachaduras?', required: true },
+          { label: 'Alicate Universal: As partes metálicas (mordentes e corte) estão em bom estado e funcionando corretamente?', required: true },
+          { label: 'Chave de Fenda: A haste está reta e sem danos/deformações?', required: true },
+          { label: 'Chave de Fenda: A ponta está em bom estado (sem desgaste excessivo ou quebra)?', required: true },
+          { label: 'Chave Phillips (Cruzada): A ponta está íntegra e sem desgaste que comprometa o encaixe?', required: true },
+          { label: 'Chave Phillips (Cruzada): O cabo isolado está firme e sem trincas?', required: true }
+        ]
+      },
+      parafusadeira: {
+        name: 'Parafusadeira',
+        color: 'from-purple-500 to-indigo-600',
+        items: [
+          { label: 'A ligação de energia está sendo realizada por intermédio de conjunto plugue e tomada?', required: true },
+          { label: 'As conexões estão livres de rupturas de fios e sem cabos e/ou fios expostos?', required: true },
+          { label: 'As ligações fase, neutro e terra (inclusive o aterramento da carcaça) foram devidamente instaladas por eletricista?', required: true },
+          { label: 'Cabo com duplo isolamento, instalado suspenso, esticado e não enrolado para evitar a formação de campo magnético, livre de emendas, avarias, danos e contato com água?', required: true },
+          { label: 'Carcaça, alças, manoplas, presilhas e outros dispositivos de transporte e manobra do portátil estão livres de trincas, avarias ou deformações?', required: true },
+          { label: 'Está livre de vibrações e ruídos anormais quando em funcionamento?', required: true },
+          { label: 'Existe identificação de tensão no equipamento e no ramal/tomada de energia?', required: true },
+          { label: 'Existe interruptor liga / desliga funcionando?', required: true },
+          { label: 'Existem proteções mecânicas contra contato acidental com partes móveis?', required: true },
+          { label: 'O gatilho de acionamento funciona de forma a manter o equipamento em funcionamento somente se mantido pressionado?', required: true },
+          { label: 'O mandril está perfeito e sem dentes quebrados?', required: true },
+          { label: 'O ramal de energia possui proteção por DR ou DDR?', required: true },
+          { label: 'Plug e conexões padrão industrial ou stack com dispositivo de segurança contra desconexão acidental e tampa de proteção na tomada?', required: true },
+          { label: 'Possui chave mandril?', required: true },
+          { label: 'Possui fenda apropriada?', required: true },
+          { label: 'Quando existentes, as emendas dos cabos e fios de energia estão sendo realizadas com fita de alta fusão sobreposta por fita isolante, de forma que somente seja possível removê-las por destruição?', required: true }
+        ]
+      },
+      madona: {
+        name: 'Madona (Ferramenta de Aterramento)',
+        color: 'from-gray-600 to-gray-800',
+        items: [
+          { label: 'O equipamento está íntegro e sem danos?', required: true },
+          { label: 'As alças do equipamento estão em boas condições?', required: true },
+          { label: 'A capa de conexão entre o tubo e a haste está sem avarias e amassados?', required: true },
+          { label: 'A parte traseira do equipamento está em boas condições?', required: true },
+          { label: 'A trava de segurança está no local e bem fixada?', required: true }
+        ]
+      },
+      epis: {
+        name: 'EPIs',
+        color: 'from-orange-500 to-red-600',
+        items: [
+          { label: 'O Capacete de segurança utilizado é de classe B e está em boas condições de uso?', required: true },
+          { label: 'A Botina de Segurança é do tipo B e está livre de componentes metálicos, desgastes e avarias nas costuras?', required: true },
+          { label: 'As luvas isolantes de borracha possuem certificados de qualidade e estão em boas condições de uso (sem avarias, rasgos e/ou furos)?', required: true },
+          { label: 'As Luvas de Couro de Proteção para Luvas Isolantes estão em boas condições de uso?', required: true },
+          { label: 'O cinto de segurança utilizado possui proteção elétrica e está em boas condições de uso, livre de avarias, rasgos e com costuras intactas?', required: true },
+          { label: 'O capuz ou balaclava utilizado possui proteção contra agentes térmicos provenientes de arco elétrico e estão isentos de avarias, rasgos e ou furos?', required: true },
+          { label: 'As vestimentas (calça/camisa) possuem proteção contra agentes térmicos provenientes de arco elétrico e/ou fogo repentino?', required: true },
+          { label: 'As vestimentas de proteção (calça/camisa) possuem identificação externa legível do CA, da classe de proteção e ATPV?', required: true },
+          { label: 'As vestimentas de proteção (calça/camisa) estão com as costuras íntegras, sem sinais de abrasão, cortes, que possam comprometer a resistência anti-chama do EPI?', required: true },
+          { label: 'O óculos de segurança está em boas condições e adequado à atividade executada?', required: true },
+          { label: 'O abafador de ruído está em boas condições, construído em material não condutor?', required: true },
+          { label: 'Os EPIs utilizados estão secos e livres de umidade?', required: true }
+        ]
+      },
+      escada: {
+        name: 'Escada',
+        color: 'from-teal-500 to-cyan-600',
+        items: [
+          { label: 'A altura máxima da escada de abrir é de 3,6 metros?', required: true },
+          { label: 'A altura máxima da escada simples é 6,0 metros?', required: true },
+          { label: 'A altura máxima da escada telescópica é de 11 metros?', required: true },
+          { label: 'As escadas encontram-se livres de defeitos e em bom estado de conservação?', required: true },
+          { label: 'As escadas são guardadas protegidas de intempéries em suporte específico?', required: true },
+          { label: 'As passarelas estão instaladas conforme NR18 com sobras dos pranchões nas extremidades?', required: true },
+          { label: 'As travas de montantes encontram-se funcionando (escadas telescópicas)?', required: true },
+          { label: 'Corrimão contínuo e desobstruído, rodapé e proteções na altura correta (passarelas e plataformas)?', required: true },
+          { label: 'Degraus do tipo "encaixe", livres de avarias e danos com espaçamentos de 25 cm a 30 cm?', required: true },
+          { label: 'Dobradiças fixas, as partes metálicas estão livres de avarias e danos?', required: true },
+          { label: 'Escada bem fixada, amarrada e com sapatas anti-derrapantes?', required: true },
+          { label: 'Escada com identificação (TAG)?', required: true },
+          { label: 'Escadas de madeira estão livres de pintura e danos físicos no geral?', required: true },
+          { label: 'Limitador de abertura funcionando (escadas dobráveis)?', required: true },
+          { label: 'Montantes em bom estado, não apresentando quebra ou rachaduras?', required: true },
+          { label: 'Montantes travados, cordas de nylon e roldanas livres de avarias e danos (escadas telescópicas)?', required: true },
+          { label: 'Pisos das plataformas encontram-se sem danos (vãos, aberturas, soltos, etc)?', required: true }
+        ]
+      },
+      alicate_amperimetro: {
+        name: 'Alicate Amperímetro',
+        color: 'from-indigo-500 to-purple-600',
+        items: [
+          { label: 'Display legível e funcionando', required: true },
+          { label: 'Garra abrindo e fechando corretamente', required: true },
+          { label: 'Bateria carregada ou substituída', required: true },
+          { label: 'Seletor de função operacional', required: true },
+          { label: 'Cabos de teste em bom estado (isolamento íntegro)', required: true },
+          { label: 'Ponteiras dos cabos sem oxidação', required: true },
+          { label: 'Calibração dentro do prazo', required: true },
+          { label: 'Case/estojo de proteção disponível', required: true },
+          { label: 'Isolamento da garra em perfeito estado', required: true },
+          { label: 'Manual de instruções disponível', required: true }
+        ]
+      },
+      caneta_teste: {
+        name: 'Caneta Teste',
+        color: 'from-pink-500 to-rose-600',
+        items: [
+          { label: 'LED indicador funcionando', required: true },
+          { label: 'Bateria operacional (se aplicável)', required: true },
+          { label: 'Ponta de teste sem danos ou oxidação', required: true },
+          { label: 'Corpo isolante íntegro (sem trincas)', required: true },
+          { label: 'Clip de fixação presente', required: true },
+          { label: 'Teste em tensão conhecida aprovado', required: true },
+          { label: 'Faixa de tensão adequada ao uso', required: true },
+          { label: 'Certificado de conformidade válido', required: true },
+          { label: 'Armazenamento adequado (estojo protetor)', required: true },
+          { label: 'Identificação do proprietário/responsável', required: true }
+        ]
+      },
+      
+      // ============ CHECKLISTS COR DO MÊS ============
+      cor_mes_caneta_teste: {
+        name: 'Caneta Teste - Cor do Mês',
+        color: 'from-pink-500 to-rose-600',
+        isCorDoMes: true,
+        items: [
+          { label: 'LED indicador funcionando', required: true },
+          { label: 'Bateria operacional (se aplicável)', required: true },
+          { label: 'Ponta de teste sem danos ou oxidação', required: true },
+          { label: 'Corpo isolante íntegro (sem trincas)', required: true },
+          { label: 'Clip de fixação presente', required: true },
+          { label: 'Teste em tensão conhecida aprovado', required: true },
+          { label: 'Faixa de tensão adequada ao uso', required: true },
+          { label: 'Certificado de conformidade válido', required: true },
+          { label: 'Armazenamento adequado (estojo protetor)', required: true },
+          { label: 'Identificação do proprietário/responsável', required: true }
+        ]
+      },
+      cor_mes_escada: {
+        name: 'Escada - Cor do Mês',
+        color: 'from-teal-500 to-cyan-600',
+        isCorDoMes: true,
+        items: [
+          { label: 'A altura máxima da escada de abrir é de 3,6 metros?', required: true },
+          { label: 'A altura máxima da escada simples é 6,0 metros?', required: true },
+          { label: 'A altura máxima da escada telescópica é de 11 metros?', required: true },
+          { label: 'As escadas encontram-se livres de defeitos e em bom estado de conservação?', required: true },
+          { label: 'As escadas são guardadas protegidas de intempéries em suporte específico?', required: true },
+          { label: 'As passarelas estão instaladas conforme NR18 com sobras dos pranchões nas extremidades?', required: true },
+          { label: 'As travas de montantes encontram-se funcionando (escadas telescópicas)?', required: true },
+          { label: 'Corrimão contínuo e desobstruído, rodapé e proteções na altura correta (passarelas e plataformas)?', required: true },
+          { label: 'Degraus do tipo "encaixe", livres de avarias e danos com espaçamentos de 25 cm a 30 cm?', required: true },
+          { label: 'Dobradiças fixas, as partes metálicas estão livres de avarias e danos?', required: true },
+          { label: 'Escada bem fixada, amarrada e com sapatas anti-derrapantes?', required: true },
+          { label: 'Escada com identificação (TAG)?', required: true },
+          { label: 'Escadas de madeira estão livres de pintura e danos físicos no geral?', required: true },
+          { label: 'Limitador de abertura funcionando (escadas dobráveis)?', required: true },
+          { label: 'Montantes em bom estado, não apresentando quebra ou rachaduras?', required: true },
+          { label: 'Montantes travados, cordas de nylon e roldanas livres de avarias e danos (escadas telescópicas)?', required: true },
+          { label: 'Pisos das plataformas encontram-se sem danos (vãos, aberturas, soltos, etc)?', required: true }
+        ]
+      },
+      cor_mes_alicate_amperimetro: {
+        name: 'Alicate Amperímetro - Cor do Mês',
+        color: 'from-indigo-500 to-purple-600',
+        isCorDoMes: true,
+        items: [
+          { label: 'Display legível e funcionando', required: true },
+          { label: 'Garra abrindo e fechando corretamente', required: true },
+          { label: 'Bateria carregada ou substituída', required: true },
+          { label: 'Seletor de função operacional', required: true },
+          { label: 'Cabos de teste em bom estado (isolamento íntegro)', required: true },
+          { label: 'Ponteiras dos cabos sem oxidação', required: true },
+          { label: 'Calibração dentro do prazo', required: true },
+          { label: 'Case/estojo de proteção disponível', required: true },
+          { label: 'Isolamento da garra em perfeito estado', required: true },
+          { label: 'Manual de instruções disponível', required: true }
+        ]
+      },
+      cor_mes_madona: {
+        name: 'Madona - Cor do Mês',
+        color: 'from-gray-600 to-gray-800',
+        isCorDoMes: true,
+        items: [
+          { label: 'O equipamento está íntegro e sem danos?', required: true },
+          { label: 'As alças do equipamento estão em boas condições?', required: true },
+          { label: 'A capa de conexão entre o tubo e a haste está sem avarias e amassados?', required: true },
+          { label: 'A parte traseira do equipamento está em boas condições?', required: true },
+          { label: 'A trava de segurança está no local e bem fixada?', required: true }
+        ]
+      },
+      cor_mes_parafusadeira: {
+        name: 'Parafusadeira - Cor do Mês',
+        color: 'from-purple-500 to-indigo-600',
+        isCorDoMes: true,
+        items: [
+          { label: 'A ligação de energia está sendo realizada por intermédio de conjunto plugue e tomada?', required: true },
+          { label: 'As conexões estão livres de rupturas de fios e sem cabos e/ou fios expostos?', required: true },
+          { label: 'As ligações fase, neutro e terra (inclusive o aterramento da carcaça) foram devidamente instaladas por eletricista?', required: true },
+          { label: 'Cabo com duplo isolamento, instalado suspenso, esticado e não enrolado para evitar a formação de campo magnético, livre de emendas, avarias, danos e contato com água?', required: true },
+          { label: 'Carcaça, alças, manoplas, presilhas e outros dispositivos de transporte e manobra do portátil estão livres de trincas, avarias ou deformações?', required: true },
+          { label: 'Está livre de vibrações e ruídos anormais quando em funcionamento?', required: true },
+          { label: 'Existe identificação de tensão no equipamento e no ramal/tomada de energia?', required: true },
+          { label: 'Existe interruptor liga / desliga funcionando?', required: true },
+          { label: 'Existem proteções mecânicas contra contato acidental com partes móveis?', required: true },
+          { label: 'O gatilho de acionamento funciona de forma a manter o equipamento em funcionamento somente se mantido pressionado?', required: true },
+          { label: 'O mandril está perfeito e sem dentes quebrados?', required: true },
+          { label: 'O ramal de energia possui proteção por DR ou DDR?', required: true },
+          { label: 'Plug e conexões padrão industrial ou stack com dispositivo de segurança contra desconexão acidental e tampa de proteção na tomada?', required: true },
+          { label: 'Possui chave mandril?', required: true },
+          { label: 'Possui fenda apropriada?', required: true },
+          { label: 'Quando existentes, as emendas dos cabos e fios de energia estão sendo realizadas com fita de alta fusão sobreposta por fita isolante, de forma que somente seja possível removê-las por destruição?', required: true }
+        ]
+      },
+      cor_mes_ferramentas_manuais: {
+        name: 'Ferramentas Manuais - Cor do Mês',
+        color: 'from-red-500 to-pink-600',
+        isCorDoMes: true,
+        items: [
+          { label: 'As ferramentas isoladas estão armazenadas em local adequado, longe de locais úmidos, que ofereçam risco de contaminação e/ou dano em sua estrutura? (Armazenar preferencialmente em caixas de ferramentas e/ou bolsas específicas)', required: true },
+          { label: 'Possuem número de série/TAG visível e legível?', required: true },
+          { label: 'As ferramentas isoladas possuem evidência de que foram realizados testes/ensaios de isolação e estes estão dentro dos prazos de validade?', required: true },
+          { label: 'As ferramentas isoladas estão livres de improvisos, emendas, prolongamentos?', required: true },
+          { label: 'É respeitada a proibição de utilizar ferramentas não isoladas em atividades elétricas?', required: true },
+          { label: 'Alicate Universal: O isolamento da empunhadura está íntegro e sem rachaduras?', required: true },
+          { label: 'Alicate Universal: As partes metálicas (mordentes e corte) estão em bom estado e funcionando corretamente?', required: true },
+          { label: 'Chave de Fenda: A haste está reta e sem danos/deformações?', required: true },
+          { label: 'Chave de Fenda: A ponta está em bom estado (sem desgaste excessivo ou quebra)?', required: true },
+          { label: 'Chave Phillips (Cruzada): A ponta está íntegra e sem desgaste que comprometa o encaixe?', required: true },
+          { label: 'Chave Phillips (Cruzada): O cabo isolado está firme e sem trincas?', required: true }
+        ]
+      },
+      cor_mes_quadro_eletrico: {
+        name: 'Quadro Elétrico - Cor do Mês',
+        color: 'from-green-500 to-emerald-600',
+        isCorDoMes: true,
+        items: [
+          { label: 'Inspeção visual?', required: true },
+          { label: 'O quadro elétrico está aterrado?', required: true },
+          { label: 'Cabos alimentadores estão em boas condições?', required: true },
+          { label: 'Proteção acrílica do quadro está instalada e está em boas condições?', required: true },
+          { label: 'Existe extintor próximo ao equipamento?', required: true },
+          { label: 'O quadro elétrico está bloqueado com cadeado?', required: true },
+          { label: 'O quadro elétrico possui proteção contra intempéries?', required: true },
+          { label: 'Todos os cabos, parafusos e plug estão em boas condições de uso?', required: true },
+          { label: 'O quadro elétrico possui carômetro do eletricista?', required: true },
+          { label: 'Possui relé de fuga (DDR)?', required: true },
+          { label: 'Possui diagrama unifilar?', required: true },
+          { label: 'Possui identificação de tensão?', required: true }
+        ]
+      },
+      cor_mes_torre_iluminacao: {
+        name: 'Gerador/Torre de Iluminação - Cor do Mês',
+        color: 'from-yellow-400 to-orange-500',
+        isCorDoMes: true,
+        items: [
+          { label: 'Aterramento instalado adequadamente?', required: true },
+          { label: 'Cabo com duplo isolamento e livre de emendas, avarias e danos?', required: true },
+          { label: 'Carcaça livre de avarias e danos?', required: true },
+          { label: 'Descarga de fumaça em local ventilado, afastado de pessoas e regulado?', required: true },
+          { label: 'Encontra-se instalado em área isolada e sinalizada?', required: true },
+          { label: 'Escapamento com proteção de parte quente?', required: true },
+          { label: 'Existe bacia de contenção que atenda a demanda de todo óleo para consumo em caso de derrame?', required: true },
+          { label: 'Extintor de incêndio é proporcional, inspecionado e carregado?', required: true },
+          { label: 'Interruptor liga / desliga funcionando?', required: true },
+          { label: 'Livre de vazamentos de óleo?', required: true },
+          { label: 'Não existem vibrações anormais quando em funcionamento?', required: true },
+          { label: 'Plug padrão industrial ou stack?', required: true },
+          { label: 'Pneus em bom estado de uso?', required: true },
+          { label: 'Possui chave de parada de emergência?', required: true },
+          { label: 'Possui chave liga/desliga?', required: true },
+          { label: 'Possui controle da emissão de gases poluentes e ruídos?', required: true },
+          { label: 'Possui proteção das partes móveis das engrenagens da torre de iluminação?', required: true },
+          { label: 'Possui fitas refletivas em seus lados externos?', required: true },
+          { label: 'Possui freio de estacionamento e calços?', required: true },
+          { label: 'Possui garantia atestada por oficina credenciada?', required: true },
+          { label: 'Possui identificação de tensão?', required: true },
+          { label: 'Possui logotipo da empresa e nº sequencial?', required: true },
+          { label: 'Possui manômetros / amperímetros?', required: true },
+          { label: 'Possui pontos de apoio (mínimo de três)?', required: true },
+          { label: 'Possui proteção contra intempéries?', required: true },
+          { label: 'Proteção de partes móveis e correias?', required: true },
+          { label: 'Sistema de reboque em bom estado de conservação?', required: true },
+          { label: 'Tanque de combustível identificado e isolado?', required: true }
+        ]
+      },
+      cor_mes_epis: {
+        name: 'EPIs - Cor do Mês',
+        color: 'from-orange-500 to-red-600',
+        isCorDoMes: true,
+        items: [
+          { label: 'O Capacete de segurança utilizado é de classe B e está em boas condições de uso?', required: true },
+          { label: 'A Botina de Segurança é do tipo B e está livre de componentes metálicos, desgastes e avarias nas costuras?', required: true },
+          { label: 'As luvas isolantes de borracha possuem certificados de qualidade e estão em boas condições de uso (sem avarias, rasgos e/ou furos)?', required: true },
+          { label: 'As Luvas de Couro de Proteção para Luvas Isolantes estão em boas condições de uso?', required: true },
+          { label: 'O cinto de segurança utilizado possui proteção elétrica e está em boas condições de uso, livre de avarias, rasgos e com costuras intactas?', required: true },
+          { label: 'O capuz ou balaclava utilizado possui proteção contra agentes térmicos provenientes de arco elétrico e estão isentos de avarias, rasgos e ou furos?', required: true },
+          { label: 'As vestimentas (calça/camisa) possuem proteção contra agentes térmicos provenientes de arco elétrico e/ou fogo repentino?', required: true },
+          { label: 'As vestimentas de proteção (calça/camisa) possuem identificação externa legível do CA, da classe de proteção e ATPV?', required: true },
+          { label: 'As vestimentas de proteção (calça/camisa) estão com as costuras íntegras, sem sinais de abrasão, cortes, que possam comprometer a resistência anti-chama do EPI?', required: true },
+          { label: 'O óculos de segurança está em boas condições e adequado �� atividade executada?', required: true },
+          { label: 'O abafador de ruído está em boas condições, construído em material não condutor?', required: true },
+          { label: 'Os EPIs utilizados estão secos e livres de umidade?', required: true }
+        ]
+      }
+    };
+    
+    // ============ ELEMENTOS DO DOM ============
+    const screens = {
+      login: document.getElementById('screen-login'),
+      register: document.getElementById('screen-register'),
+      selection: document.getElementById('screen-selection'),
+      questions: document.getElementById('screen-questions'),
+      signature: document.getElementById('screen-signature'),
+      document: document.getElementById('screen-document'),
+      history: document.getElementById('screen-history'),
+      monthlyReport: document.getElementById('screen-monthly-report')
+    };
+    
+    const elements = {
+      loginForm: document.getElementById('login-form'),
+      loginName: document.getElementById('login-name'),
+      loginPassword: document.getElementById('login-password'),
+      btnRegister: document.getElementById('btn-register'),
+      registerForm: document.getElementById('register-form'),
+      registerName: document.getElementById('register-name'),
+      registerPassword: document.getElementById('register-password'),
+      registerPasswordConfirm: document.getElementById('register-password-confirm'),
+      btnBackToLogin: document.getElementById('btn-back-to-login'),
+      userDisplayName: document.getElementById('user-display-name'),
+      btnLogout: document.getElementById('btn-logout'),
+      checklistGrid: document.getElementById('checklist-grid'),
+      btnHistoryMain: document.getElementById('btn-history-main'),
+      btnBackSelection: document.getElementById('btn-back-selection'),
+      btnBackSelectionDoc: document.getElementById('btn-back-selection-doc'),
+      btnBackHistory: document.getElementById('btn-back-history'),
+      btnDownloadPdf: document.getElementById('btn-download-pdf'),
+      btnNew: document.getElementById('btn-new'),
+      progressBar: document.getElementById('progress-bar'),
+      progressText: document.getElementById('progress-text'),
+      currentChecklistName: document.getElementById('current-checklist-name'),
+      questionContainer: document.getElementById('question-container'),
+      signatureCanvas: document.getElementById('signature-canvas'),
+      documentContent: document.getElementById('document-content'),
+      alertNc: document.getElementById('alert-nc'),
+      historyList: document.getElementById('history-list'),
+      historyEmpty: document.getElementById('history-empty'),
+      loadingOverlay: document.getElementById('loading-overlay'),
+      loadingText: document.getElementById('loading-text'),
+      toast: document.getElementById('toast'),
+      toastMessage: document.getElementById('toast-message'),
+      headerTitle: document.getElementById('header-title'),
+      btnMonthlyReport: document.getElementById('btn-monthly-report'),
+      btnBackMonthly: document.getElementById('btn-back-monthly'),
+      btnDownloadMonthlyPdf: document.getElementById('btn-download-monthly-pdf'),
+      monthSelector: document.getElementById('month-selector'),
+      btnFilterMonth: document.getElementById('btn-filter-month'),
+      monthlyContent: document.getElementById('monthly-content'),
+      filterButtons: document.getElementById('filter-buttons')
+    };
+    
+    // ============ FUNÇÕES DE UI ============
+    function showScreen(screenName) {
+      Object.values(screens).forEach(s => s.classList.add('hidden'));
+      screens[screenName].classList.remove('hidden');
+    }
+    
+    function showLoading(show, text = 'Salvando...') {
+      window.appState.isLoading = show;
+      elements.loadingText.textContent = text;
+      elements.loadingOverlay.classList.toggle('hidden', !show);
+    }
+    
+    function showToast(message, duration = 3000) {
+      elements.toastMessage.textContent = message;
+      elements.toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        elements.toast.classList.add('translate-y-20', 'opacity-0');
+      }, duration);
+    }
+    
+    function updateProgress() {
+      const totalQuestions = 6 + window.appState.currentChecklistItems.length;
+      const progress = ((window.appState.currentStep + 1) / totalQuestions) * 100;
+      elements.progressBar.style.width = `${progress}%`;
+      elements.progressText.textContent = `Pergunta ${window.appState.currentStep + 1} de ${totalQuestions}`;
+    }
+    
+    function getUserChecklists() {
+      if (!window.appState.currentUser) return [];
+      return window.appState.allRecords.filter(r => 
+        r.record_type === 'checklist' && 
+        r.user_name === window.appState.currentUser.user_name
+      );
+    }
+    
+    // ============ LOGIN E REGISTRO ============
+    elements.loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const name = elements.loginName.value.trim();
+      const password = elements.loginPassword.value.trim();
+      
+      if (!name || !password) {
+        showToast('Preencha todos os campos!');
+        return;
+      }
+      
+      showLoading(true, 'Entrando...');
+      
+      const user = window.appState.allRecords.find(r => 
+        r.record_type === 'user' && 
+        r.user_name.toLowerCase() === name.toLowerCase() && 
+        r.user_password === password
+      );
+      
+      if (user) {
+        window.appState.currentUser = user;
+        elements.userDisplayName.textContent = user.user_name;
+        showLoading(false);
+        renderChecklistSelection();
+        showScreen('selection');
+        showToast(`Bem-vindo, ${user.user_name}! 🎉`);
+      } else {
+        showLoading(false);
+        showToast('Nome ou senha incorretos!');
+      }
+    });
+    
+    elements.btnRegister.addEventListener('click', () => {
+      showScreen('register');
+    });
+    
+    elements.btnBackToLogin.addEventListener('click', () => {
+      showScreen('login');
+    });
+    
+    elements.registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const name = elements.registerName.value.trim();
+      const password = elements.registerPassword.value.trim();
+      const passwordConfirm = elements.registerPasswordConfirm.value.trim();
+      
+      if (!name || !password || !passwordConfirm) {
+        showToast('Preencha todos os campos!');
+        return;
+      }
+      
+      if (password !== passwordConfirm) {
+        showToast('As senhas não coincidem!');
+        return;
+      }
+      
+      if (password.length < 4) {
+        showToast('A senha deve ter pelo menos 4 caracteres!');
+        return;
+      }
+      
+      const userExists = window.appState.allRecords.find(r => 
+        r.record_type === 'user' && r.user_name.toLowerCase() === name.toLowerCase()
+      );
+      
+      if (userExists) {
+        showToast('Este nome de usuário já está em uso!');
+        return;
+      }
+      
+      showLoading(true, 'Criando conta...');
+      
+      try {
+        const result = await window.dataSdk.create({
+          record_type: 'user',
+          user_name: name,
+          user_password: password,
+          created_at: new Date().toISOString()
+        });
+        
+        if (!result.isOk) {
+          showToast('Erro ao criar conta. Tente novamente.');
+          showLoading(false);
+          return;
+        }
+        
+        showLoading(false);
+        showToast('Conta criada com sucesso! Faça login.');
+        elements.registerForm.reset();
+        showScreen('login');
+        
+      } catch (err) {
+        showLoading(false);
+        showToast('Erro ao criar conta.');
+      }
+    });
+    
+    elements.btnLogout.addEventListener('click', () => {
+      window.appState.currentUser = null;
+      elements.loginForm.reset();
+      showScreen('login');
+      showToast('Até logo! 👋');
+    });
+    
+    // ============ RENDERIZAÇÃO DA TELA DE SELEÇÃO ============
+    function renderChecklistSelection() {
+      const normalChecklists = Object.keys(checklistTypes).filter(key => !checklistTypes[key].isCorDoMes);
+      const corDoMesChecklists = Object.keys(checklistTypes).filter(key => checklistTypes[key].isCorDoMes);
+      
+      const normalSection = normalChecklists.map(key => {
+        const checklist = checklistTypes[key];
+        return `
+          <div class="checklist-card bg-white rounded-2xl shadow-xl overflow-hidden cursor-pointer transform hover:shadow-2xl slide-up"
+               onclick="window.selectChecklist('${key}')">
+            <div class="h-32 bg-gradient-to-br ${checklist.color} flex items-center justify-center px-4">
+              <span class="text-white text-xl font-bold text-center">${checklist.name}</span>
+            </div>
+            <div class="p-6">
+              <p class="text-gray-600 text-sm mb-4">${checklist.items.length} itens de verificação</p>
+              <div class="flex items-center justify-between">
+                <span class="text-blue-600 font-semibold text-sm">Iniciar Inspeção →</span>
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      const corDoMesSection = corDoMesChecklists.map(key => {
+        const checklist = checklistTypes[key];
+        return `
+          <div class="checklist-card bg-white rounded-2xl shadow-xl overflow-hidden cursor-pointer transform hover:shadow-2xl slide-up border-4 border-yellow-400"
+               onclick="window.selectChecklist('${key}')">
+            <div class="h-32 bg-gradient-to-br ${checklist.color} flex items-center justify-center px-4 relative">
+              <div class="absolute top-2 right-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                COR DO MÊS
+              </div>
+              <span class="text-white text-xl font-bold text-center">${checklist.name}</span>
+            </div>
+            <div class="p-6">
+              <p class="text-gray-600 text-sm mb-4">${checklist.items.length} itens de verificação</p>
+              <div class="flex items-center justify-between">
+                <span class="text-blue-600 font-semibold text-sm">Iniciar Inspeção →</span>
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      const html = `
+        <div class="mb-12">
+          <h3 class="text-2xl font-bold text-white mb-6 text-center">Inspeções Padrão</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            ${normalSection}
+          </div>
+        </div>
+        
+        <div class="border-t-4 border-yellow-400 pt-12">
+          <div class="text-center mb-6">
+            <div class="inline-block bg-yellow-400 text-yellow-900 px-6 py-3 rounded-2xl shadow-xl mb-3">
+              <span class="text-2xl font-bold">🎨 COR DO MÊS</span>
+            </div>
+            <p class="text-white text-lg">Verificações de identificação por cor do mês</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            ${corDoMesSection}
+          </div>
+        </div>
+      `;
+      
+      elements.checklistGrid.innerHTML = html;
+    }
+    
+    window.selectChecklist = function(type) {
+      const userChecklists = getUserChecklists();
+      if (userChecklists.length >= 999) {
+        showToast('Limite de 999 inspeções atingido. Exclua alguns registros.');
+        return;
+      }
+      
+      window.appState.selectedChecklistType = type;
+      window.appState.currentChecklistItems = checklistTypes[type].items;
+      
+      window.appState.currentChecklist = {
+        record_type: 'checklist',
+        user_name: window.appState.currentUser.user_name,
+        checklist_type: type,
+        responsavel: '',
+        matricula: '',
+        tag: '',
+        local_frente: '',
+        periodicidade: '',
+        data_inspecao: new Date().toISOString(),
+        decisao_final: '',
+        completed: false
+      };
+      
+      checklistTypes[type].items.forEach((item, index) => {
+        const itemNum = index + 1;
+        window.appState.currentChecklist[`item_${itemNum}_status`] = '';
+        window.appState.currentChecklist[`item_${itemNum}_obs`] = '';
+      });
+      
+      window.appState.currentStep = 0;
+      elements.currentChecklistName.textContent = checklistTypes[type].name;
+      updateProgress();
+      renderQuestion();
+      showScreen('questions');
+    }
+    
+    // ============ RENDERIZAÇÃO DE PERGUNTAS ============
+    function renderQuestion() {
+      const type = window.appState.selectedChecklistType;
+      const checklist = checklistTypes[type];
+      const totalInitialQuestions = 6;
+      let html = '';
+      
+      if (window.appState.currentStep === 0) {
+        html = `
+          <div class="bg-white rounded-2xl shadow-2xl p-8 fade-in">
+            <div class="mb-6">
+              <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900 text-center mb-2">Nome do Responsável</h2>
+              <p class="text-gray-500 text-center">Quem está realizando esta inspeção?</p>
+            </div>
+            <input type="text" id="input-responsavel" 
+              class="w-full border-2 border-gray-300 rounded-xl px-5 py-4 text-lg focus:border-blue-600 focus:outline-none transition-colors"
+              placeholder="Digite seu nome completo"
+              value="${window.appState.currentChecklist.responsavel || ''}">
+            <button onclick="window.saveAndNext('responsavel')" 
+              class="mt-6 w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-6 rounded-xl text-lg transition-all shadow-lg">
+              Continuar
+            </button>
+          </div>
+        `;
+      } else if (window.appState.currentStep === 1) {
+        html = `
+          <div class="bg-white rounded-2xl shadow-2xl p-8 fade-in">
+            <div class="mb-6">
+              <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
+                </svg>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900 text-center mb-2">Número da Matrícula</h2>
+              <p class="text-gray-500 text-center">Informe sua matrícula funcional</p>
+            </div>
+            <input type="text" id="input-matricula" 
+              class="w-full border-2 border-gray-300 rounded-xl px-5 py-4 text-lg focus:border-blue-600 focus:outline-none transition-colors"
+              placeholder="Digite sua matrícula"
+              value="${window.appState.currentChecklist.matricula || ''}">
+            <button onclick="window.saveAndNext('matricula')" 
+              class="mt-6 w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-6 rounded-xl text-lg transition-all shadow-lg">
+              Continuar
+            </button>
+          </div>
+        `;
+      } else if (window.appState.currentStep === 2) {
+        html = `
+          <div class="bg-white rounded-2xl shadow-2xl p-8 fade-in">
+            <div class="mb-6">
+              <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900 text-center mb-2">Tag (Identificação)</h2>
+              <p class="text-gray-500 text-center">Informe a tag ou número de identificação do equipamento</p>
+            </div>
+            <input type="text" id="input-tag" 
+              class="w-full border-2 border-gray-300 rounded-xl px-5 py-4 text-lg focus:border-blue-600 focus:outline-none transition-colors"
+              placeholder="Digite a tag do equipamento"
+              value="${window.appState.currentChecklist.tag || ''}">
+            <button onclick="window.saveAndNext('tag')" 
+              class="mt-6 w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-6 rounded-xl text-lg transition-all shadow-lg">
+              Continuar
+            </button>
+          </div>
+        `;
+      } else if (window.appState.currentStep === 3) {
+        html = `
+          <div class="bg-white rounded-2xl shadow-2xl p-8 fade-in">
+            <div class="mb-6">
+              <div class="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900 text-center mb-2">Local / Frente de Serviço</h2>
+              <p class="text-gray-500 text-center">Onde esta inspeção está sendo realizada?</p>
+            </div>
+            <input type="text" id="input-local_frente" 
+              class="w-full border-2 border-gray-300 rounded-xl px-5 py-4 text-lg focus:border-blue-600 focus:outline-none transition-colors"
+              placeholder="Digite o local ou frente de serviço"
+              value="${window.appState.currentChecklist.local_frente || ''}">
+            <button onclick="window.saveAndNext('local_frente')" 
+              class="mt-6 w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-6 rounded-xl text-lg transition-all shadow-lg">
+              Continuar
+            </button>
+          </div>
+        `;
+      } else if (window.appState.currentStep === 4) {
+        const currentPeriodicidade = window.appState.currentChecklist.periodicidade || '';
+        html = `
+          <div class="bg-white rounded-2xl shadow-2xl p-8 fade-in">
+            <div class="mb-6">
+              <div class="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900 text-center mb-2">Periodicidade da Verificação</h2>
+              <p class="text-gray-500 text-center">Com que frequência esta inspeção deve ser realizada?</p>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-3 mb-6">
+              <button onclick="window.selectPeriodicidade('diaria')" 
+                class="p-5 rounded-xl border-2 ${currentPeriodicidade === 'diaria' ? 'border-blue-600 bg-blue-50 ring-4 ring-blue-200' : 'border-gray-200 hover:border-blue-400'} transition-all text-left">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-full ${currentPeriodicidade === 'diaria' ? 'bg-blue-600' : 'bg-blue-100'} flex items-center justify-center flex-shrink-0">
+                    <svg class="w-6 h-6 ${currentPeriodicidade === 'diaria' ? 'text-white' : 'text-blue-700'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-bold text-lg text-gray-900">Diária</div>
+                    <div class="text-sm text-gray-600">Verificaç��o realizada todos os dias</div>
+                  </div>
+                </div>
+              </button>
+              
+              <button onclick="window.selectPeriodicidade('semanal')" 
+                class="p-5 rounded-xl border-2 ${currentPeriodicidade === 'semanal' ? 'border-green-600 bg-green-50 ring-4 ring-green-200' : 'border-gray-200 hover:border-green-400'} transition-all text-left">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-full ${currentPeriodicidade === 'semanal' ? 'bg-green-600' : 'bg-green-100'} flex items-center justify-center flex-shrink-0">
+                    <svg class="w-6 h-6 ${currentPeriodicidade === 'semanal' ? 'text-white' : 'text-green-700'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-bold text-lg text-gray-900">Semanal</div>
+                    <div class="text-sm text-gray-600">Verificação realizada semanalmente</div>
+                  </div>
+                </div>
+              </button>
+              
+              <button onclick="window.selectPeriodicidade('mensal')" 
+                class="p-5 rounded-xl border-2 ${currentPeriodicidade === 'mensal' ? 'border-purple-600 bg-purple-50 ring-4 ring-purple-200' : 'border-gray-200 hover:border-purple-400'} transition-all text-left">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 rounded-full ${currentPeriodicidade === 'mensal' ? 'bg-purple-600' : 'bg-purple-100'} flex items-center justify-center flex-shrink-0">
+                    <svg class="w-6 h-6 ${currentPeriodicidade === 'mensal' ? 'text-white' : 'text-purple-700'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div class="font-bold text-lg text-gray-900">Mensal</div>
+                    <div class="text-sm text-gray-600">Verificação realizada mensalmente</div>
+                  </div>
+                </div>
+              </button>
+            </div>
+            
+            <button id="btn-periodicidade" onclick="window.confirmPeriodicidade()" 
+              class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-6 rounded-xl text-lg transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              ${!currentPeriodicidade ? 'disabled' : ''}>
+              Continuar
+            </button>
+          </div>
+        `;
+      } else if (window.appState.currentStep === 5) {
+        const today = new Date().toISOString().split('T')[0];
+        html = `
+          <div class="bg-white rounded-2xl shadow-2xl p-8 fade-in">
+            <div class="mb-6">
+              <div class="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900 text-center mb-2">Data da Inspeção</h2>
+              <p class="text-gray-500 text-center">Confirme ou altere a data</p>
+            </div>
+            <input type="date" id="input-data" 
+              class="w-full border-2 border-gray-300 rounded-xl px-5 py-4 text-lg focus:border-blue-600 focus:outline-none transition-colors"
+              value="${today}"
+              max="${today}">
+            <button onclick="window.saveDate()" 
+              class="mt-6 w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-6 rounded-xl text-lg transition-all shadow-lg">
+              Continuar para Inspeção
+            </button>
+          </div>
+        `;
+      } else {
+        const totalInitialQuestions = 6;
+        const itemIndex = window.appState.currentStep - totalInitialQuestions;
+        const item = window.appState.currentChecklistItems[itemIndex];
+        const itemNum = itemIndex + 1;
+        const statusKey = `item_${itemNum}_status`;
+        const obsKey = `item_${itemNum}_obs`;
+        const currentStatus = window.appState.currentChecklist[statusKey] || '';
+        
+        html = `
+          <div class="bg-white rounded-2xl shadow-2xl p-8 fade-in">
+            <div class="mb-6">
+              <div class="text-center mb-4">
+                <span class="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-bold mb-3">
+                  Item ${itemNum} de ${window.appState.currentChecklistItems.length}
+                </span>
+              </div>
+              <h2 class="text-xl font-bold text-gray-900 text-center mb-2">${item.label}</h2>
+              <p class="text-gray-500 text-center">Avalie a conformidade deste item</p>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-4 mb-6">
+              <button onclick="window.selectItemStatus(${itemNum}, 'conforme')" 
+                class="status-btn p-5 rounded-xl border-2 ${currentStatus === 'conforme' ? 'border-green-600 bg-green-50 ring-4 ring-green-200' : 'border-gray-200 hover:border-green-400'} transition-all">
+                <div class="w-14 h-14 rounded-full ${currentStatus === 'conforme' ? 'bg-green-600' : 'bg-green-100'} flex items-center justify-center mx-auto mb-2">
+                  <svg class="w-7 h-7 ${currentStatus === 'conforme' ? 'text-white' : 'text-green-700'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                  </svg>
+                </div>
+                <span class="font-bold text-sm text-gray-900">APROVADO</span>
+              </button>
+              
+              <button onclick="window.selectItemStatus(${itemNum}, 'nao_conforme')" 
+                class="status-btn p-5 rounded-xl border-2 ${currentStatus === 'nao_conforme' ? 'border-red-500 bg-red-50 ring-4 ring-red-200' : 'border-gray-200 hover:border-red-300'} transition-all">
+                <div class="w-14 h-14 rounded-full ${currentStatus === 'nao_conforme' ? 'bg-red-500' : 'bg-red-100'} flex items-center justify-center mx-auto mb-2">
+                  <svg class="w-7 h-7 ${currentStatus === 'nao_conforme' ? 'text-white' : 'text-red-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </div>
+                <span class="font-bold text-sm text-gray-900">REPROVADO</span>
+              </button>
+              
+              <button onclick="window.selectItemStatus(${itemNum}, 'na')" 
+                class="status-btn p-5 rounded-xl border-2 ${currentStatus === 'na' ? 'border-gray-500 bg-gray-100 ring-4 ring-gray-300' : 'border-gray-200 hover:border-gray-400'} transition-all">
+                <div class="w-14 h-14 rounded-full ${currentStatus === 'na' ? 'bg-gray-500' : 'bg-gray-200'} flex items-center justify-center mx-auto mb-2">
+                  <svg class="w-7 h-7 ${currentStatus === 'na' ? 'text-white' : 'text-gray-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M20 12H4"/>
+                  </svg>
+                </div>
+                <span class="font-bold text-sm text-gray-900">N/A</span>
+              </button>
+            </div>
+            
+            <div id="obs-container-${itemNum}" class="${currentStatus === 'nao_conforme' ? '' : 'hidden'}">
+              <label class="block text-sm font-semibold text-gray-700 mb-2">
+                Observações / Ações Corretivas <span class="text-red-500">*</span>
+              </label>
+              <textarea id="obs-${itemNum}" rows="3" 
+                class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:border-blue-600 focus:outline-none transition-colors"
+                placeholder="Descreva o problema identificado e as ações necessárias...">${window.appState.currentChecklist[obsKey] || ''}</textarea>
+            </div>
+            
+            <button id="btn-next-item-${itemNum}" onclick="window.nextItem(${itemNum})" 
+              class="mt-6 w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-6 rounded-xl text-lg transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              ${!currentStatus ? 'disabled' : ''}>
+              ${itemIndex === window.appState.currentChecklistItems.length - 1 ? 'Finalizar Inspeção' : 'Próximo Item'}
+            </button>
+          </div>
+        `;
+      }
+      
+      if (window.appState.currentStep > 0) {
+        html += `
+          <button onclick="window.prevQuestion()" class="mt-4 w-full text-white hover:text-blue-200 font-medium py-3 transition-colors bg-white bg-opacity-20 rounded-xl">
+            ← Voltar para pergunta anterior
+          </button>
+        `;
+      }
+      
+      elements.questionContainer.innerHTML = html;
+    }
+    
+    // ============ ASSINATURA ============
+    let signaturePad = {
+      isDrawing: false,
+      lastX: 0,
+      lastY: 0,
+      ctx: null
+    };
+
+    function initSignatureCanvas() {
+      const canvas = elements.signatureCanvas;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      
+      signaturePad.ctx = canvas.getContext('2d');
+      signaturePad.ctx.strokeStyle = '#000000';
+      signaturePad.ctx.lineJoin = 'round';
+      signaturePad.ctx.lineCap = 'round';
+      signaturePad.ctx.lineWidth = 2;
+      
+      // Mouse events
+      canvas.addEventListener('mousedown', (e) => {
+        signaturePad.isDrawing = true;
+        [signaturePad.lastX, signaturePad.lastY] = [e.offsetX, e.offsetY];
+      });
+      canvas.addEventListener('mousemove', (e) => {
+        if (!signaturePad.isDrawing) return;
+        signaturePad.ctx.beginPath();
+        signaturePad.ctx.moveTo(signaturePad.lastX, signaturePad.lastY);
+        signaturePad.ctx.lineTo(e.offsetX, e.offsetY);
+        signaturePad.ctx.stroke();
+        [signaturePad.lastX, signaturePad.lastY] = [e.offsetX, e.offsetY];
+      });
+      canvas.addEventListener('mouseup', () => signaturePad.isDrawing = false);
+      canvas.addEventListener('mouseout', () => signaturePad.isDrawing = false);
+      
+      // Touch events
+      canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const rect = e.target.getBoundingClientRect();
+        const touch = e.touches[0];
+        signaturePad.isDrawing = true;
+        signaturePad.lastX = touch.clientX - rect.left;
+        signaturePad.lastY = touch.clientY - rect.top;
+      }, { passive: false });
+      
+      canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (!signaturePad.isDrawing) return;
+        const rect = e.target.getBoundingClientRect();
+        const touch = e.touches[0];
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        signaturePad.ctx.beginPath();
+        signaturePad.ctx.moveTo(signaturePad.lastX, signaturePad.lastY);
+        signaturePad.ctx.lineTo(x, y);
+        signaturePad.ctx.stroke();
+        signaturePad.lastX = x;
+        signaturePad.lastY = y;
+      }, { passive: false });
+      
+      canvas.addEventListener('touchend', () => signaturePad.isDrawing = false);
+    }
+
+    window.clearSignature = function() {
+      const canvas = elements.signatureCanvas;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    window.saveSignatureAndFinish = function() {
+      const canvas = elements.signatureCanvas;
+      window.appState.currentChecklist.signature = canvas.toDataURL('image/png');
+      finishChecklist();
+    }
+
+    // ============ HANDLERS ============
+    window.saveAndNext = function(field) {
+      const input = document.getElementById(`input-${field}`);
+      const value = input.value.trim();
+      
+      if (!value) {
+        showToast('Por favor, preencha este campo.');
+        input.focus();
+        return;
+      }
+      
+      window.appState.currentChecklist[field] = value;
+      window.appState.currentStep++;
+      updateProgress();
+      renderQuestion();
+    }
+    
+    window.selectPeriodicidade = function(tipo) {
+      window.appState.currentChecklist.periodicidade = tipo;
+      renderQuestion();
+    }
+    
+    window.confirmPeriodicidade = function() {
+      if (!window.appState.currentChecklist.periodicidade) {
+        showToast('Por favor, selecione a periodicidade.');
+        return;
+      }
+      window.appState.currentStep++;
+      updateProgress();
+      renderQuestion();
+    }
+    
+    window.saveDate = function() {
+      const input = document.getElementById('input-data');
+      window.appState.currentChecklist.data_inspecao = new Date(input.value + 'T00:00:00').toISOString();
+      window.appState.currentStep++;
+      updateProgress();
+      renderQuestion();
+    }
+    
+    window.selectItemStatus = function(itemNum, status) {
+      const statusKey = `item_${itemNum}_status`;
+      window.appState.currentChecklist[statusKey] = status;
+      
+      const obsContainer = document.getElementById(`obs-container-${itemNum}`);
+      if (status === 'nao_conforme') {
+        obsContainer.classList.remove('hidden');
+      } else {
+        obsContainer.classList.add('hidden');
+      }
+      
+      const btn = document.getElementById(`btn-next-item-${itemNum}`);
+      btn.disabled = false;
+      
+      renderQuestion();
+    }
+    
+    window.nextItem = async function(itemNum) {
+      const statusKey = `item_${itemNum}_status`;
+      const obsKey = `item_${itemNum}_obs`;
+      
+      if (window.appState.currentChecklist[statusKey] === 'nao_conforme') {
+        const obsInput = document.getElementById(`obs-${itemNum}`);
+        if (!obsInput.value.trim()) {
+          showToast('Por favor, descreva as observações para este item reprovado.');
+          obsInput.focus();
+          return;
+        }
+        window.appState.currentChecklist[obsKey] = obsInput.value;
+      }
+      
+      const totalInitialQuestions = 6;
+      const itemIndex = window.appState.currentStep - totalInitialQuestions;
+      
+      if (itemIndex === window.appState.currentChecklistItems.length - 1) {
+        showScreen('signature');
+        setTimeout(initSignatureCanvas, 100);
+      } else {
+        window.appState.currentStep++;
+        updateProgress();
+        renderQuestion();
+      }
+    }
+    
+    window.prevQuestion = function() {
+      if (window.appState.currentStep > 0) {
+        window.appState.currentStep--;
+        updateProgress();
+        renderQuestion();
+      }
+    }
+    
+    // ============ FINALIZAÇÃO ============
+    async function finishChecklist() {
+      showLoading(true, 'Salvando inspeção...');
+      
+      window.appState.currentChecklist.completed = true;
+      window.appState.currentChecklist.created_at = new Date().toISOString();
+      
+      try {
+        const { __backendId, ...dataToCreate } = window.appState.currentChecklist;
+        const result = await window.dataSdk.create(dataToCreate);
+        
+        if (!result.isOk) {
+          showToast('Erro ao salvar inspeção. Tente novamente.');
+          showLoading(false);
+          return;
+        }
+        
+        showLoading(false);
+        
+        const type = window.appState.currentChecklist.checklist_type;
+        window.appState.currentChecklistItems = checklistTypes[type].items;
+        
+        renderDocument();
+        showScreen('document');
+        showToast('Inspeção finalizada com sucesso!');
+      } catch (err) {
+        showLoading(false);
+        showToast('Erro ao salvar. Tente novamente.');
+      }
+    }
+    
+    function hasNonConformities() {
+      return window.appState.currentChecklistItems.some((item, index) => {
+        const itemNum = index + 1;
+        return window.appState.currentChecklist[`item_${itemNum}_status`] === 'nao_conforme';
+      });
+    }
+    
+    // ============ RENDERIZAÇÃO DO DOCUMENTO ============
+    function renderDocument() {
+      const hasNC = hasNonConformities();
+      elements.alertNc.classList.toggle('hidden', !hasNC);
+      
+      const type = window.appState.currentChecklist.checklist_type;
+      const checklist = checklistTypes[type];
+      const date = new Date(window.appState.currentChecklist.data_inspecao);
+      const formattedDate = date.toLocaleDateString('pt-BR');
+      
+      const periodicidadeLabel = {
+        'diaria': 'Diária',
+        'semanal': 'Semanal',
+        'mensal': 'Mensal'
+      };
+      
+      const isCorDoMes = checklist.isCorDoMes || false;
+      const documentTitle = isCorDoMes ? 'LISTA DE VERIFICAÇÃO COR DO MÊS' : 'CHECKLIST DE SEGURANÇA';
+      
+      const itemsFromDefinition = checklist.items;
+      const totalItems = itemsFromDefinition.length;
+      
+      let tableRows = '';
+      for (let i = 0; i < totalItems; i++) {
+        const item = itemsFromDefinition[i];
+        const itemNum = i + 1;
+        const statusKey = `item_${itemNum}_status`;
+        const status = window.appState.currentChecklist[statusKey];
+        
+        let conformeSymbol = '';
+        let naoConformeSymbol = '';
+        let naSymbol = '';
+        
+        if (status === 'conforme') {
+          conformeSymbol = '✓';
+        } else if (status === 'nao_conforme') {
+          naoConformeSymbol = '✗';
+        } else if (status === 'na') {
+          naSymbol = '-';
+        }
+        
+        tableRows += `
+          <tr>
+            <td style="border: 1px solid #cbd5e1; padding: 5px; font-size: 10px; font-weight: 500; text-align: center;">${itemNum}</td>
+            <td style="border: 1px solid #cbd5e1; padding: 5px; font-size: 10px; font-weight: 500;">${item.label}</td>
+            <td style="border: 1px solid #cbd5e1; padding: 5px; text-align: center; font-size: 14px; font-weight: bold; color: #059669; background: ${conformeSymbol ? '#d1fae5' : '#ffffff'};">${conformeSymbol}</td>
+            <td style="border: 1px solid #cbd5e1; padding: 5px; text-align: center; font-size: 14px; font-weight: bold; color: #dc2626; background: ${naoConformeSymbol ? '#fee2e2' : '#ffffff'};">${naoConformeSymbol}</td>
+            <td style="border: 1px solid #cbd5e1; padding: 5px; text-align: center; font-size: 14px; font-weight: bold; color: #64748b; background: ${naSymbol ? '#f1f5f9' : '#ffffff'};">${naSymbol}</td>
+          </tr>
+        `;
+      }
+      
+      let observationsSection = '';
+      for (let i = 0; i < totalItems; i++) {
+        const itemNum = i + 1;
+        const statusKey = `item_${itemNum}_status`;
+        const obsKey = `item_${itemNum}_obs`;
+        const status = window.appState.currentChecklist[statusKey];
+        const obs = window.appState.currentChecklist[obsKey] || '';
+        
+        if (status === 'nao_conforme' && obs) {
+          observationsSection += `
+            <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 12px; margin-bottom: 10px; border-radius: 4px;">
+              <strong style="color: #dc2626;">Item ${itemNum} - Observações:</strong>
+              <div style="margin-top: 5px; font-size: 10px; color: #1e293b;">${obs}</div>
+            </div>
+          `;
+        }
+      }
+      
+      const html = `
+        <div style="font-family: 'Inter', sans-serif; color: #1e293b;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+            <div style="font-size: 24px; font-weight: 900; color: #059669; letter-spacing: 1px;">VALE</div>
+            <div style="font-size: 24px; font-weight: 900; color: #1e293b; letter-spacing: 1px;">TECNOSONDA</div>
+          </div>
+          <div style="text-align: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px solid #1e40af;">
+            <div style="margin-bottom: 10px;">
+              <h1 style="font-size: 22px; font-weight: 800; color: #1e40af; margin: 0;">${documentTitle}</h1>
+              <h2 style="font-size: 16px; font-weight: 600; color: #475569; margin: 5px 0 0 0;">${checklist.name}</h2>
+              ${isCorDoMes ? '<div style="display: inline-block; background: #fbbf24; color: #78350f; font-weight: 700; padding: 6px 16px; border-radius: 20px; margin-top: 10px; font-size: 12px;">🎨 COR DO MÊS</div>' : ''}
+            </div>
+            <div style="font-size: 11px; color: #64748b;">
+              <strong>${window.appState.config.company_name}</strong> • Sistema de Inspeção Elétrica
+            </div>
+          </div>
+          
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <tr>
+              <td class="header-cell" style="width: 25%; background: #f1f5f9; font-weight: 600;">Responsável:</td>
+              <td class="header-cell" style="width: 25%;">${window.appState.currentChecklist.responsavel}</td>
+              <td class="header-cell" style="width: 25%; background: #f1f5f9; font-weight: 600;">Matrícula:</td>
+              <td class="header-cell" style="width: 25%;">${window.appState.currentChecklist.matricula}</td>
+            </tr>
+            <tr>
+              <td class="header-cell" style="background: #f1f5f9; font-weight: 600;">Tag (Identificação):</td>
+              <td class="header-cell">${window.appState.currentChecklist.tag}</td>
+              <td class="header-cell" style="background: #f1f5f9; font-weight: 600;">Local / Frente:</td>
+              <td class="header-cell">${window.appState.currentChecklist.local_frente}</td>
+            </tr>
+            <tr>
+              <td class="header-cell" style="background: #f1f5f9; font-weight: 600;">Periodicidade:</td>
+              <td class="header-cell">${periodicidadeLabel[window.appState.currentChecklist.periodicidade]}</td>
+              <td class="header-cell" style="background: #f1f5f9; font-weight: 600;">Data da Inspeção:</td>
+              <td class="header-cell">${formattedDate}</td>
+            </tr>
+          </table>
+          
+          ${hasNC ? `
+          <div style="background: #fee2e2; border: 3px solid #dc2626; padding: 15px; margin-bottom: 25px; text-align: center; border-radius: 8px;">
+            <strong style="color: #dc2626; font-size: 16px;">⚠️ ATENÇÃO: ITEM(NS) REPROVADO(S) - EQUIPAMENTO NÃO APROVADO PARA USO</strong>
+          </div>
+          ` : `
+          <div style="background: #d1fae5; border: 3px solid #059669; padding: 15px; margin-bottom: 25px; text-align: center; border-radius: 8px;">
+            <strong style="color: #059669; font-size: 16px;">✓ TODOS OS ITENS APROVADOS - EQUIPAMENTO LIBERADO PARA USO</strong>
+          </div>
+          `}
+          
+          <div style="overflow-x: auto; margin-bottom: 30px;">
+            <table class="checklist-table" style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr>
+                  <th style="background: #1e40af; color: white; text-align: center; width: 8%; font-size: 10px; border: 1px solid #cbd5e1; padding: 5px;">Nº</th>
+                  <th style="background: #1e40af; color: white; text-align: left; width: 52%; font-size: 10px; border: 1px solid #cbd5e1; padding: 5px;">ITEM DE VERIFICAÇÃO</th>
+                  <th style="background: #1e40af; color: white; text-align: center; width: 13%; font-size: 10px; border: 1px solid #cbd5e1; padding: 5px;">CONFORME</th>
+                  <th style="background: #1e40af; color: white; text-align: center; width: 13%; font-size: 10px; border: 1px solid #cbd5e1; padding: 5px;">NÃO CONFORME</th>
+                  <th style="background: #1e40af; color: white; text-align: center; width: 14%; font-size: 10px; border: 1px solid #cbd5e1; padding: 5px;">N/A</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tableRows}
+              </tbody>
+            </table>
+          </div>
+          
+          ${observationsSection ? `
+            <div style="margin-bottom: 30px;">
+              <h3 style="font-size: 14px; font-weight: 700; color: #dc2626; margin-bottom: 10px; border-bottom: 2px solid #dc2626; padding-bottom: 5px;">
+                📋 OBSERVAÇÕES E AÇÕES CORRETIVAS
+              </h3>
+              ${observationsSection}
+            </div>
+          ` : ''}
+          
+          <div style="margin-top: 20px; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+            <div style="font-weight: 600; margin-bottom: 8px; font-size: 11px;">Legenda:</div>
+            <div style="display: flex; gap: 25px; font-size: 10px;">
+              <span><strong>✓</strong> = Conforme</span>
+              <span><strong>✗</strong> = Não Conforme</span>
+              <span><strong>-</strong> = Não se aplica</span>
+            </div>
+          </div>
+          
+          <div style="margin-top: 40px; padding-top: 25px; border-top: 2px solid #cbd5e1;">
+            <div style="text-align: center;">
+              <div style="margin-bottom: 50px;">
+                ${window.appState.currentChecklist.signature ? `<img src="${window.appState.currentChecklist.signature}" style="max-height: 80px; display: block; margin: 0 auto 10px auto;" />` : ''}
+                <div style="border-top: 2px solid #1e40af; width: 300px; margin: 0 auto;"></div>
+                <div style="margin-top: 8px; font-weight: 600;">${window.appState.currentChecklist.responsavel}</div>
+                <div style="font-size: 10px; color: #64748b;">Responsável pela Inspeção</div>
+              </div>
+            </div>
+          </div>
+          
+          <div style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #e2e8f0; font-size: 9px; color: #94a3b8; text-align: center;">
+            Documento gerado automaticamente pelo Sistema de Checklists de Segurança Elétrica<br>
+            ${window.appState.config.company_name} • ${formattedDate}<br>
+            <strong>Versão 64 com Login Multiusuário</strong>
+          </div>
+        </div>
+      `;
+      
+      elements.documentContent.innerHTML = html;
+    }
+    
+    // ============ HISTÓRICO ============
+    function renderFilterButtons(year, month) {
+      const userChecklists = getUserChecklists();
+      const filteredRecords = userChecklists.filter(record => {
+        if (!record.completed || !record.created_at) return false;
+        const recordDate = new Date(record.created_at);
+        return recordDate.getFullYear() === year && recordDate.getMonth() === month;
+      });
+      
+      const countByType = {};
+      filteredRecords.forEach(record => {
+        const type = record.checklist_type;
+        countByType[type] = (countByType[type] || 0) + 1;
+      });
+      
+      const totalCount = filteredRecords.length;
+      
+      let html = `
+        <button onclick="window.setMonthlyFilter('all')" 
+          class="filter-btn px-4 py-3 rounded-lg font-semibold text-sm transition-all ${window.appState.monthlyFilter === 'all' ? 'bg-blue-600 text-white shadow-lg ring-4 ring-blue-200' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}">
+          📊 Todos (${totalCount})
+        </button>
+      `;
+      
+      Object.keys(checklistTypes).forEach(key => {
+        const checklist = checklistTypes[key];
+        const count = countByType[key] || 0;
+        const isActive = window.appState.monthlyFilter === key;
+        
+        if (count > 0) {
+          html += `
+            <button onclick="window.setMonthlyFilter('${key}')" 
+              class="filter-btn px-4 py-3 rounded-lg font-semibold text-sm transition-all text-left ${isActive ? 'bg-blue-600 text-white shadow-lg ring-4 ring-blue-200' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}">
+              ${checklist.name}${checklist.isCorDoMes ? ' 🎨' : ''} (${count})
+            </button>
+          `;
+        }
+      });
+      
+      elements.filterButtons.innerHTML = html;
+    }
+    
+    window.setMonthlyFilter = function(filterType) {
+      window.appState.monthlyFilter = filterType;
+      
+      const value = elements.monthSelector.value;
+      if (value) {
+        const [year, month] = value.split('-').map(Number);
+        renderFilterButtons(year, month - 1);
+        renderMonthlyReport(year, month - 1);
+      }
+    }
+    
+    function renderHistory() {
+      const userChecklists = getUserChecklists();
+      const completedChecklists = userChecklists.filter(c => c.completed);
+      
+      if (completedChecklists.length === 0) {
+        elements.historyList.innerHTML = '';
+        elements.historyEmpty.classList.remove('hidden');
+        return;
+      }
+      
+      elements.historyEmpty.classList.add('hidden');
+      
+      const html = completedChecklists.map(record => {
+        const date = new Date(record.created_at);
+        const type = record.checklist_type;
+        const checklist = checklistTypes[type];
+        
+        const hasNC = checklist.items.some((item, index) => {
+          const itemNum = index + 1;
+          return record[`item_${itemNum}_status`] === 'nao_conforme';
+        });
+        
+        return `
+          <div class="bg-white rounded-xl shadow-md p-5 hover:shadow-xl transition-shadow cursor-pointer" onclick="window.viewChecklist('${record.__backendId}')">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <div>
+                  <div class="font-bold text-lg text-gray-900">${checklist.name}</div>
+                  <div class="text-sm text-gray-600">Por: ${record.responsavel} • Local: ${record.local_frente || 'N/A'}</div>
+                  <div class="text-xs text-gray-500">
+                    ${date.toLocaleDateString('pt-BR')} • Tag: ${record.tag}
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                ${hasNC ? 
+                  '<span class="px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-bold">REPROVADO</span>' : 
+                  '<span class="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-bold">APROVADO</span>'
+                }
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      elements.historyList.innerHTML = html;
+    }
+    
+    window.viewChecklist = function(backendId) {
+      const record = window.appState.allRecords.find(c => c.__backendId === backendId);
+      if (record) {
+        window.appState.currentChecklist = { ...record };
+        window.appState.selectedChecklistType = record.checklist_type;
+        const checklist = checklistTypes[record.checklist_type];
+        window.appState.currentChecklistItems = checklist ? checklist.items : [];
+        renderDocument();
+        showScreen('document');
+      }
+    }
+    
+    // ============ RELATÓRIO MENSAL ============
+    function renderMonthlyReport(year, month) {
+      const userChecklists = getUserChecklists();
+      let filteredRecords = userChecklists.filter(record => {
+        if (!record.completed || !record.created_at) return false;
+        const recordDate = new Date(record.created_at);
+        return recordDate.getFullYear() === year && recordDate.getMonth() === month;
+      });
+      
+      if (window.appState.monthlyFilter !== 'all') {
+        filteredRecords = filteredRecords.filter(record => record.checklist_type === window.appState.monthlyFilter);
+      }
+      
+      if (filteredRecords.length === 0) {
+        elements.monthlyContent.innerHTML = `
+          <div class="text-center py-16">
+            <svg class="w-20 h-20 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <p class="text-gray-500 text-lg">Nenhuma inspeção encontrada para este período/filtro.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const groupedByTag = {};
+      filteredRecords.forEach(record => {
+        const tag = record.tag;
+        if (!groupedByTag[tag]) {
+          groupedByTag[tag] = [];
+        }
+        groupedByTag[tag].push(record);
+      });
+      
+      const monthName = new Date(year, month).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      
+      let html = `
+        <div style="font-family: 'Inter', sans-serif; color: #1e293b;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+            <div style="font-size: 32px; font-weight: 900; color: #059669; letter-spacing: 1px;">VALE</div>
+            <div style="font-size: 32px; font-weight: 900; color: #1e293b; letter-spacing: 1px;">TECNOSONDA</div>
+          </div>
+          <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #1e40af;">
+            <h1 style="font-size: 28px; font-weight: 800; color: #1e40af; margin: 0;">RELAT&Oacute;RIO MENSAL DE INSPE&Ccedil;&Otilde;ES</h1>
+            <h2 style="font-size: 20px; font-weight: 600; color: #475569; margin: 10px 0 0 0; text-transform: capitalize;">${monthName}</h2>
+            <div style="font-size: 14px; color: #64748b; margin-top: 5px;">
+              <strong>${window.appState.config.company_name}</strong> &bull; Usu&aacute;rio: ${window.appState.currentUser.user_name}
+            </div>
+          </div>
+      `;
+      
+      Object.keys(groupedByTag).forEach(tag => {
+        const tagRecords = groupedByTag[tag];
+        const firstRecord = tagRecords[0];
+        const checklist = checklistTypes[firstRecord.checklist_type];
+        const isCorDoMes = checklist.isCorDoMes || false;
+        
+        const inspectionsByDay = {};
+        tagRecords.forEach(record => {
+          const recordDate = new Date(record.created_at);
+          const day = recordDate.getDate();
+          inspectionsByDay[day] = record;
+        });
+        
+        html += `
+          <div style="margin-bottom: 50px; page-break-inside: avoid;">
+            <div style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); padding: 15px; margin-bottom: 15px; border-radius: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <h3 style="color: white; font-size: 20px; font-weight: 700; margin: 0 0 5px 0;">${checklist.name}</h3>
+                  ${isCorDoMes ? '<div style="display: inline-block; background: #fbbf24; color: #78350f; font-weight: 700; padding: 4px 12px; border-radius: 15px; font-size: 11px; margin-top: 5px;">\uD83C\uDFA8 COR DO M\u00CAS</div>' : ''}
+                  <div style="color: #bfdbfe; font-size: 13px; margin-top: 8px;">
+                    <strong>Tag:</strong> ${tag} &bull; <strong>Local:</strong> ${firstRecord.local_frente || 'N/A'}
+                  </div>
+                </div>
+                <div style="text-align: right; color: #bfdbfe; font-size: 13px;">
+                  <div><strong>Respons&aacute;vel:</strong> ${firstRecord.responsavel}</div>
+                  <div><strong>Periodicidade:</strong> ${firstRecord.periodicidade ? firstRecord.periodicidade.charAt(0).toUpperCase() + firstRecord.periodicidade.slice(1) : 'N/A'}</div>
+                </div>
+              </div>
+            </div>
+            
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <thead>
+                  <tr>
+                    <th style="background: #1e40af; color: white; text-align: center; font-size: 11px; border: 1px solid #cbd5e1; padding: 8px; width: 10%;">Dia</th>
+        `;
+        
+        for (let day = 1; day <= daysInMonth; day++) {
+          html += `
+            <th style="background: #1e40af; color: white; text-align: center; font-size: 10px; border: 1px solid #cbd5e1; padding: 6px; width: ${90/daysInMonth}%;">${day}</th>
+          `;
+        }
+        
+        html += `
+                  </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        checklist.items.forEach((item, itemIndex) => {
+          const itemNum = itemIndex + 1;
+          
+          html += `
+            <tr>
+              <td style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px; font-size: 10px; font-weight: 600; text-align: center;">P${itemNum}</td>
+          `;
+          
+          for (let day = 1; day <= daysInMonth; day++) {
+            const inspection = inspectionsByDay[day];
+            let cellContent = '';
+            let bgColor = '#ffffff';
+            
+            if (inspection) {
+              const statusKey = `item_${itemNum}_status`;
+              const status = inspection[statusKey];
+              
+              if (status === 'conforme') {
+                cellContent = '\u2713';
+                bgColor = '#d1fae5';
+              } else if (status === 'nao_conforme') {
+                cellContent = '\u2717';
+                bgColor = '#fee2e2';
+              } else if (status === 'na') {
+                cellContent = '-';
+                bgColor = '#f1f5f9';
+              }
+            }
+            
+            html += `
+              <td style="background: ${bgColor}; border: 1px solid #cbd5e1; padding: 6px; text-align: center; font-size: 14px; font-weight: bold; color: ${cellContent === '\u2713' ? '#059669' : cellContent === '\u2717' ? '#dc2626' : '#64748b'};">${cellContent}</td>
+            `;
+          }
+          
+          html += `</tr>`;
+        });
+        
+        html += `
+                </tbody>
+              </table>
+            </div>
+            
+            <div style="margin-top: 20px;">
+              <h4 style="font-size: 14px; font-weight: 700; color: #1e40af; margin-bottom: 10px;">\uD83D\uDCCB ITENS DE VERIFICA&Ccedil;&Atilde;O</h4>
+              <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+        `;
+        
+        checklist.items.forEach((item, itemIndex) => {
+          const itemNum = itemIndex + 1;
+          html += `
+            <div style="margin-bottom: 8px; font-size: 11px; color: #475569;">
+              <strong>P${itemNum}:</strong> ${item.label}
+            </div>
+          `;
+        });
+        
+        html += `
+              </div>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: #fffbeb; border: 2px solid #fbbf24; border-radius: 8px;">
+              <div style="font-weight: 700; margin-bottom: 8px; color: #92400e; font-size: 12px;">\uD83D\uDCDD OBSERVA&Ccedil;&Otilde;ES DO M\u00CAS:</div>
+        `;
+        
+        let hasObservations = false;
+        Object.keys(inspectionsByDay).forEach(day => {
+          const inspection = inspectionsByDay[day];
+          checklist.items.forEach((item, itemIndex) => {
+            const itemNum = itemIndex + 1;
+            const statusKey = `item_${itemNum}_status`;
+            const obsKey = `item_${itemNum}_obs`;
+            const status = inspection[statusKey];
+            const obs = inspection[obsKey] || '';
+            
+            if (status === 'nao_conforme' && obs) {
+              hasObservations = true;
+              html += `
+                <div style="margin-bottom: 10px; padding: 10px; background: #fef2f2; border-left: 3px solid #dc2626; font-size: 11px; color: #1e293b;">
+                  <strong style="color: #dc2626;">Dia ${day} - Item ${itemNum}:</strong> ${obs}
+                </div>
+              `;
+            }
+          });
+        });
+        
+        if (!hasObservations) {
+          html += `
+            <div style="font-size: 11px; color: #78716c; font-style: italic;">Nenhuma observa&ccedil;&atilde;o registrada neste m\u00EAs.</div>
+          `;
+        }
+        
+        html += `
+            </div>
+          </div>
+        `;
+      });
+      
+      html += `
+          <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #cbd5e1;">
+            <div style="margin-bottom: 15px; padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+              <div style="font-weight: 600; margin-bottom: 8px; font-size: 13px; color: #1e293b;">Legenda:</div>
+              <div style="display: flex; gap: 25px; font-size: 12px; color: #475569;">
+                <span><strong style="color: #059669;">\u2713</strong> = Conforme / Aprovado</span>
+                <span><strong style="color: #dc2626;">\u2717</strong> = N&atilde;o Conforme / Reprovado</span>
+                <span><strong style="color: #64748b;">-</strong> = N&atilde;o se aplica (N/A)</span>
+              </div>
+            </div>
+            
+            <div style="text-align: center; font-size: 10px; color: #94a3b8;">
+              Relat&oacute;rio gerado automaticamente pelo Sistema de Checklists de Seguran&ccedil;a El&eacute;trica<br>
+              ${window.appState.config.company_name} &bull; ${new Date().toLocaleDateString('pt-BR')}<br>
+              <strong>Vers&atilde;o 64 com Login Multiusu&aacute;rio</strong>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      elements.monthlyContent.innerHTML = html;
+    }
+    
+    // ============ EVENT LISTENERS ============
+    elements.btnHistoryMain.addEventListener('click', () => {
+      renderHistory();
+      showScreen('history');
+    });
+    
+    elements.btnBackSelection.addEventListener('click', () => {
+      showScreen('selection');
+    });
+    
+    elements.btnBackSelectionDoc.addEventListener('click', () => {
+      showScreen('selection');
+    });
+    
+    elements.btnBackHistory.addEventListener('click', () => {
+      showScreen('selection');
+    });
+    
+    elements.btnMonthlyReport.addEventListener('click', () => {
+      window.appState.monthlyFilter = 'all';
+      const now = new Date();
+      const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      elements.monthSelector.value = currentMonth;
+      renderFilterButtons(now.getFullYear(), now.getMonth());
+      renderMonthlyReport(now.getFullYear(), now.getMonth());
+      showScreen('monthlyReport');
+    });
+    
+    elements.btnBackMonthly.addEventListener('click', () => {
+      showScreen('history');
+    });
+    
+    elements.btnFilterMonth.addEventListener('click', () => {
+      const value = elements.monthSelector.value;
+      if (!value) {
+        showToast('Por favor, selecione um mês.');
+        return;
+      }
+      window.appState.monthlyFilter = 'all';
+      const [year, month] = value.split('-').map(Number);
+      renderFilterButtons(year, month - 1);
+      renderMonthlyReport(year, month - 1);
+    });
+    
+    elements.btnDownloadMonthlyPdf.addEventListener('click', async () => {
+      showLoading(true, 'Gerando PDF do relatório mensal...');
+      
+      try {
+        // Aguardar renderização completa
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        const value = elements.monthSelector.value;
+        const [year, month] = value.split('-').map(Number);
+        const monthName = new Date(year, month - 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+        const filename = `Relatorio_Mensal_${monthName.replace(/\s+/g, '_')}.pdf`;
+        
+        // Forçar largura de desktop para o PDF ficar correto no celular
+        const originalWidth = elements.monthlyContent.style.width;
+        elements.monthlyContent.style.width = '1400px';
+
+        // Capturar o elemento com html2canvas
+        const canvas = await html2canvas(elements.monthlyContent, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+          windowWidth: 1400,
+          windowHeight: elements.monthlyContent.scrollHeight,
+          scrollX: 0,
+          scrollY: 0
+        });
+        
+        // Converter para imagem PNG de alta qualidade
+        const imgData = canvas.toDataURL('image/png', 1.0);
+        
+        // Criar PDF em orientação retrato
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'a4',
+          compress: true
+        });
+        
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const margin = 10;
+        const pageHeight = pdfHeight - (margin * 2);
+        
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+        const ratio = canvasHeight / canvasWidth;
+        
+        // Calcular dimensões mantendo proporção
+        const imgWidth = pdfWidth - (margin * 2);
+        const imgHeight = imgWidth * ratio;
+        
+        let heightLeft = imgHeight;
+        let position = margin;
+        
+        // Adicionar imagem ao PDF
+        pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight, undefined, 'FAST');
+        
+        // Mascarar rodapé da primeira página para evitar repetição
+        pdf.setFillColor(255, 255, 255);
+        pdf.rect(0, pdfHeight - margin, pdfWidth, margin, 'F');
+        
+        heightLeft -= pageHeight;
+        
+        while (heightLeft > 0) {
+          position -= pageHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight, undefined, 'FAST');
+          
+          // Mascarar margens superior e inferior nas páginas seguintes
+          pdf.setFillColor(255, 255, 255);
+          pdf.rect(0, 0, pdfWidth, margin, 'F');
+          pdf.rect(0, pdfHeight - margin, pdfWidth, margin, 'F');
+          
+          heightLeft -= pageHeight;
+        }
+        
+        // Restaurar largura original
+        elements.monthlyContent.style.width = originalWidth;
+
+        // Salvar o PDF
+        pdf.save(filename);
+        
+        showLoading(false);
+        showToast('✅ PDF do relatório mensal baixado com sucesso! 📄');
+        
+      } catch (err) {
+        showLoading(false);
+        console.error('Erro ao gerar PDF:', err);
+        showToast('❌ Erro ao gerar PDF do relatório. Tente novamente.', 5000);
+      }
+    });
+    
+    elements.btnDownloadPdf.addEventListener('click', async () => {
+      showLoading(true, 'Gerando PDF do checklist...');
+      
+      try {
+        // Aguardar renderização completa
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        const type = window.appState.currentChecklist.checklist_type;
+        const checklist = checklistTypes[type];
+        const date = new Date(window.appState.currentChecklist.created_at);
+        const formattedDate = date.toLocaleDateString('pt-BR').replace(/\//g, '-');
+        const tag = window.appState.currentChecklist.tag || 'SemTag';
+        const filename = `Checklist_${checklist.name.replace(/\s+/g, '_')}_${tag}_${formattedDate}.pdf`;
+        
+        // Forçar largura de desktop para o PDF ficar correto no celular
+        const originalWidth = elements.documentContent.style.width;
+        elements.documentContent.style.width = '1100px';
+
+        // Capturar o elemento com html2canvas
+        const canvas = await html2canvas(elements.documentContent, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+          windowWidth: 1200,
+          windowHeight: elements.documentContent.scrollHeight,
+          scrollX: 0,
+          scrollY: 0
+        });
+        
+        // Converter para imagem PNG de alta qualidade
+        const imgData = canvas.toDataURL('image/png', 1.0);
+        
+        // Criar PDF
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'a4',
+          compress: true
+        });
+        
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const margin = 10;
+        const pageHeight = pdfHeight - (margin * 2);
+        
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+        const ratio = canvasHeight / canvasWidth;
+        
+        // Calcular dimensões mantendo proporção
+        const imgWidth = pdfWidth - (margin * 2);
+        const imgHeight = imgWidth * ratio;
+        
+        let heightLeft = imgHeight;
+        let position = margin;
+        
+        // Adicionar imagem ao PDF
+        pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight, undefined, 'FAST');
+        
+        // Mascarar rodapé da primeira página para evitar repetição
+        pdf.setFillColor(255, 255, 255);
+        pdf.rect(0, pdfHeight - margin, pdfWidth, margin, 'F');
+        
+        heightLeft -= pageHeight;
+        
+        while (heightLeft > 0) {
+          position -= pageHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight, undefined, 'FAST');
+          
+          // Mascarar margens superior e inferior nas páginas seguintes
+          pdf.setFillColor(255, 255, 255);
+          pdf.rect(0, 0, pdfWidth, margin, 'F');
+          pdf.rect(0, pdfHeight - margin, pdfWidth, margin, 'F');
+          
+          heightLeft -= pageHeight;
+        }
+        
+        // Restaurar largura original
+        elements.documentContent.style.width = originalWidth;
+
+        // Salvar o PDF
+        pdf.save(filename);
+        
+        showLoading(false);
+        showToast('✅ PDF do checklist baixado com sucesso! 📄');
+        
+      } catch (err) {
+        showLoading(false);
+        console.error('Erro ao gerar PDF:', err);
+        showToast('❌ Erro ao gerar PDF. Tente novamente.', 5000);
+      }
+    });
+    
+    elements.btnNew.addEventListener('click', () => {
+      const userChecklists = getUserChecklists();
+      if (userChecklists.length >= 999) {
+        showToast('Limite de 999 inspeções atingido.');
+        return;
+      }
+      showScreen('selection');
+    });
+    
+    // ============ SDK INITIALIZATION ============
+    const dataHandler = {
+      onDataChanged(data) {
+        window.appState.allRecords = data || [];
+      }
+    };
+    
+    async function onConfigChange(cfg) {
+      window.appState.config = { ...defaultConfig, ...cfg };
+      
+      if (elements.headerTitle) {
+        elements.headerTitle.textContent = window.appState.config.app_title || defaultConfig.app_title;
+      }
+      
+      document.body.style.background = `linear-gradient(135deg, ${window.appState.config.background_color} 0%, ${window.appState.config.primary_color} 100%)`;
+    }
+    
+    function mapToCapabilities(cfg) {
+      return {
+        recolorables: [
+          {
+            get: () => cfg.background_color || defaultConfig.background_color,
+            set: (v) => { cfg.background_color = v; window.elementSdk.setConfig({ background_color: v }); }
+          },
+          {
+            get: () => cfg.surface_color || defaultConfig.surface_color,
+            set: (v) => { cfg.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); }
+          },
+          {
+            get: () => cfg.text_color || defaultConfig.text_color,
+            set: (v) => { cfg.text_color = v; window.elementSdk.setConfig({ text_color: v }); }
+          },
+          {
+            get: () => cfg.primary_color || defaultConfig.primary_color,
+            set: (v) => { cfg.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); }
+          },
+          {
+            get: () => cfg.accent_color || defaultConfig.accent_color,
+            set: (v) => { cfg.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); }
+          }
+        ],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      };
+    }
+    
+    function mapToEditPanelValues(cfg) {
+      return new Map([
+        ['app_title', cfg.app_title || defaultConfig.app_title],
+        ['company_name', cfg.company_name || defaultConfig.company_name]
+      ]);
+    }
+    
+    // Initialize
+    (async function init() {
+      if (window.elementSdk) {
+        await window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities,
+          mapToEditPanelValues
+        });
+      }
+      
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init(dataHandler);
+        if (!result.isOk) {
+          console.error('Failed to initialize Data SDK');
+        }
+      }
+      
+      showScreen('login');
+    })();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c2ee78a65a5f62f',t:'MTc2OTI1MTE0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
